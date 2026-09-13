@@ -1,0 +1,33 @@
+/* 
+ * WP AI Context Admin Styles
+ * Custom styles for the React UI to complement Tailwind
+ */
+
+.wp-ai-context-react-app {
+    margin-top: 1.5rem;
+}
+
+.wp-ai-context-react-app .components-checkbox-control__input {
+    border-radius: 4px;
+    border-color: #d0d7de;
+}
+
+.wp-ai-context-react-app .components-checkbox-control__input:checked {
+    background-color: #0969da;
+    border-color: #0969da;
+}
+
+.wp-ai-context-react-app .components-base-control__field {
+    margin-bottom: 1rem;
+}
+
+.wp-ai-context-react-app textarea.components-textarea-control__input {
+    border: none !important;
+    background-color: #f6f8fa;
+    box-shadow: none !important;
+    resize: vertical;
+}
+
+/* Fix WP Admin overlap */
+#wpcontent { padding-left: 0; }
+.wrap { margin: 0; }

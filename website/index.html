@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Context Engine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        editorial: ['"Playfair Display"', 'serif'],
+                        sans: ['"Inter"', 'sans-serif'],
+                    },
+                    colors: {
+                        paper: '#F9F9F8',
+                        ink: '#111111',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.8s ease-out, transform 0.8s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.2s; }
+        .reveal-delay-2 { transition-delay: 0.4s; }
+    </style>
+
+    <!-- PostHog Analytics -->
+    <script>
+        !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+        posthog.init('phc_p5ZLegpaTUN9fo9SJCKqCBJWUz29EpjgKKbC4KyfEo8K', {
+            api_host:'https://us.i.posthog.com',
+            person_profiles: 'identified_only'
+        });
+    </script>
+</head>
+<body class="bg-paper text-ink font-sans antialiased selection:bg-ink selection:text-paper">
+
+    <!-- Navigation -->
+    <nav class="w-full border-b border-ink/20 py-6 px-4 md:px-12 flex justify-between items-center bg-paper sticky top-0 z-50">
+        <div class="text-xs uppercase tracking-[0.2em] font-medium">Vol. 1</div>
+        <div class="font-editorial text-2xl tracking-wide">AI Context Engine</div>
+        <div class="text-xs uppercase tracking-[0.2em] font-medium"><a href="#download" class="hover:underline underline-offset-4 decoration-[0.5px]">Download</a></div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="min-h-[85vh] flex flex-col justify-center items-center text-center px-4 md:px-12 relative overflow-hidden">
+        <div class="max-w-5xl mx-auto z-10">
+            <h1 class="font-editorial text-6xl md:text-8xl lg:text-9xl leading-[0.9] tracking-tight mb-8">
+                Clarity for <br>
+                <span class="italic font-light">the Machine.</span>
+            </h1>
+            <p class="font-sans text-sm md:text-base max-w-2xl mx-auto text-ink/70 leading-relaxed font-light tracking-wide mb-12 uppercase">
+            Give your AI agents exact structural context, and let them write code without fear. Featuring a built-in Git Manager that intercepts fatal errors instantly.
+            <br/><br/>
+            <span class="inline-block border border-ink/30 px-4 py-2 font-mono text-[10px] tracking-widest text-ink bg-ink/5 font-bold">✓ 100% WHITE SCREEN OF DEATH (WSOD) FREE</span>
+        </p>
+            <div class="mt-16">
+                <a href="#about" class="inline-block border border-ink px-8 py-3 text-xs uppercase tracking-[0.2em] hover:bg-ink hover:text-paper transition-colors duration-500">Read the Manifesto</a>
+            </div>
+        </div>
+        
+        <!-- Abstract decorative element -->
+        <div class="absolute -right-20 top-20 w-64 h-64 md:w-96 md:h-96 border-[1px] border-ink/10 rounded-full mix-blend-multiply pointer-events-none"></div>
+        <div class="absolute -left-20 bottom-20 w-72 h-72 border-[1px] border-ink/10 rounded-full mix-blend-multiply pointer-events-none"></div>
+    </header>
+
+    <!-- Divider -->
+    <div class="w-full h-px bg-ink/20"></div>
+
+    <!-- The Problem / The Solution -->
+    <section id="about" class="py-24 px-4 md:px-12 max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24">
+            
+            <div class="editorial-column">
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-6 border-b border-ink/20 pb-4">01 — The Problem</div>
+                <h2 class="font-editorial text-4xl mb-6">Lost in Translation.</h2>
+                <p class="font-sans text-ink/80 leading-relaxed font-light mb-4 text-justify">
+                    When asking an AI for help with a WordPress environment, the machine inherently lacks context. It does not know your version, your active plugins, your server environment, or your specific configuration.
+                </p>
+                <p class="font-sans text-ink/80 leading-relaxed font-light text-justify">
+                    This vacuum of information leads to hallucinations, generic advice, and endless cycles of manual screenshotting and copy-pasting. The bridge between your reality and the AI's understanding is broken.
+                </p>
+            </div>
+
+            <div class="editorial-column">
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-6 border-b border-ink/20 pb-4">02 — The Solution</div>
+                <h2 class="font-editorial text-4xl mb-6">Structured Context.</h2>
+                <p class="font-sans text-ink/80 leading-relaxed font-light mb-4 text-justify">
+                    The WP AI Context Engine generates a structured context package—available in pure JSON or formatted Markdown. It provides the exact snapshot the AI needs.
+                </p>
+                <p class="font-sans text-ink/80 leading-relaxed font-light text-justify">
+                    It captures WordPress details, PHP environments, active plugins, and specific settings, all while meticulously redacting sensitive secrets like API keys and passwords.
+                </p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Architecture Section -->
+    <section class="border-y border-ink/20 py-24 bg-ink text-paper">
+        <div class="max-w-7xl mx-auto px-4 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="font-editorial text-5xl md:text-6xl mb-6">The Architecture</h2>
+                <p class="uppercase tracking-widest text-xs opacity-70">Built for extensibility. Designed for precision.</p>
+            </div>
+            
+            <div class="w-full max-w-5xl mx-auto mb-20 reveal overflow-hidden">
+                <img src="assets/images/features/architecture-flow.svg" alt="Architecture Data Flow Diagram" class="w-full h-auto opacity-90" loading="lazy" />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border-t border-paper/20">
+                <!-- Feature 1 -->
+                <div class="p-8 border-b sm:border-b-0 sm:border-r border-paper/20 hover:bg-paper/5 transition-colors">
+                    <h3 class="font-editorial text-2xl mb-4 italic">Collectors</h3>
+                    <p class="font-light text-sm text-paper/70 leading-relaxed">
+                        Gather raw environment and system data directly from the core WordPress ecosystem.
+                    </p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="p-8 border-b lg:border-b-0 lg:border-r border-paper/20 hover:bg-paper/5 transition-colors">
+                    <h3 class="font-editorial text-2xl mb-4 italic">Adapters</h3>
+                    <p class="font-light text-sm text-paper/70 leading-relaxed">
+                        Extract and interpret nuanced settings from third-party plugins with bespoke logic.
+                    </p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="p-8 border-b sm:border-b-0 sm:border-r border-paper/20 hover:bg-paper/5 transition-colors">
+                    <h3 class="font-editorial text-2xl mb-4 italic">Privacy Filters</h3>
+                    <p class="font-light text-sm text-paper/70 leading-relaxed">
+                        A rigorous redaction engine that ensures no sensitive tokens, keys, or passwords ever leave your server.
+                    </p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="p-8 hover:bg-paper/5 transition-colors">
+                    <h3 class="font-editorial text-2xl mb-4 italic">Exporters</h3>
+                    <p class="font-light text-sm text-paper/70 leading-relaxed">
+                        Format the resulting data into precise Markdown or JSON, perfectly primed for LLM consumption.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="py-24 px-4 md:px-12 max-w-7xl mx-auto border-b border-ink/20">
+        <div class="text-center mb-16">
+            <h2 class="font-editorial text-5xl md:text-6xl mb-6">The Output</h2>
+            <p class="uppercase tracking-widest text-xs opacity-70">A glimpse into the context package.</p>
+        </div>
+        <div class="bg-ink text-[#a3a3a3] p-8 rounded-sm font-mono text-xs overflow-x-auto shadow-2xl mx-auto max-w-4xl border border-ink/20 reveal">
+<pre><code>{
+  "site_url": "https://example.com",
+  "wp_version": "6.4.3",
+  "php_version": "8.1.2",
+  "active_theme": "twentytwentyfour",
+  "plugins": [
+    { "name": "woocommerce", "version": "8.5.2", "status": "active" },
+    { "name": "elementor", "version": "3.19.0", "status": "active" }
+  ],
+  "settings": {
+    "permalink_structure": "/%postname%/",
+    "woocommerce_currency": "USD"
+  },
+  "security": "[REDACTED API KEYS]"
+}</code></pre>
+        </div>
+    </section>
+
+    <!-- Use Cases Section -->
+    <section id="use-cases" class="py-24 px-4 md:px-12 max-w-7xl mx-auto border-b border-ink/20">
+        <div class="text-center mb-16">
+            <h2 class="font-editorial text-5xl md:text-6xl mb-6">The Playbook</h2>
+            <p class="uppercase tracking-widest text-xs opacity-70">How AI Agents leverage the Context Engine.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12">
+            <!-- Case 1: Safe Mode -->
+            <div class="reveal">
+                <img src="assets/images/features/use-case-agentic.svg" alt="Zero-Risk Code Generation" class="w-12 h-12 mb-6 opacity-80" loading="lazy" />
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-4 border-b border-ink/20 pb-2">Use Case I</div>
+                <h3 class="font-editorial text-2xl mb-3">Zero-Risk Code Gen</h3>
+                <p class="font-sans text-ink/80 text-sm leading-relaxed font-light">
+                    Agents can write custom PHP and inject it via <code class="bg-ink/5 px-1 py-0.5 rounded">/patch-file</code>. If the code throws a fatal 500 error, the internal Git Manager instantly rolls back before the user notices.
+                </p>
+            </div>
+            <!-- Case 2: Bisect -->
+            <div class="reveal reveal-delay-1">
+                <img src="assets/images/features/use-case-audit.svg" alt="Autonomous Plugin Bisect" class="w-12 h-12 mb-6 opacity-80" loading="lazy" />
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-4 border-b border-ink/20 pb-2">Use Case II</div>
+                <h3 class="font-editorial text-2xl mb-3">Autonomous Bisect</h3>
+                <p class="font-sans text-ink/80 text-sm leading-relaxed font-light">
+                    When a site breaks, agents can trigger <code class="bg-ink/5 px-1 py-0.5 rounded">/auto-plugin-bisect</code> to systematically deactivate plugins in batches and isolate the exact conflict in seconds.
+                </p>
+            </div>
+            <!-- Case 3: SecOps -->
+            <div class="reveal reveal-delay-2">
+                <img src="assets/images/features/use-case-audit.svg" alt="SecOps Auditing" class="w-12 h-12 mb-6 opacity-80" loading="lazy" />
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-4 border-b border-ink/20 pb-2">Use Case III</div>
+                <h3 class="font-editorial text-2xl mb-3">The "Ghost" SecOps</h3>
+                <p class="font-sans text-ink/80 text-sm leading-relaxed font-light">
+                    Schedule an AI to act as a security engineer—verifying core checksums, auditing admin accounts, and scanning directories for obfuscated PHP backdoors.
+                </p>
+            </div>
+            <!-- Case 4: Performance -->
+            <div class="reveal">
+                <img src="assets/images/features/use-case-performance.svg" alt="Performance Tuning" class="w-12 h-12 mb-6 opacity-80" loading="lazy" />
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-4 border-b border-ink/20 pb-2">Use Case IV</div>
+                <h3 class="font-editorial text-2xl mb-3">Automated Tuning</h3>
+                <p class="font-sans text-ink/80 text-sm leading-relaxed font-light">
+                    Agents continuously monitor TTFB, run query profiling, and optimize WooCommerce database tables by clearing transient bloat and proposing indexes.
+                </p>
+            </div>
+            <!-- Case 5: Headless -->
+            <div class="reveal reveal-delay-1">
+                <img src="assets/images/features/use-case-headless.svg" alt="Headless Frontend Generation" class="w-12 h-12 mb-6 opacity-80" loading="lazy" />
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-4 border-b border-ink/20 pb-2">Use Case V</div>
+                <h3 class="font-editorial text-2xl mb-3">Headless Generation</h3>
+                <p class="font-sans text-ink/80 text-sm leading-relaxed font-light">
+                    AI scans the REST API schema and Custom Post Types to automatically write strictly-typed TypeScript interfaces for your React or Next.js frontend.
+                </p>
+            </div>
+            <!-- Case 6: Migration -->
+            <div class="reveal reveal-delay-2">
+                <img src="assets/images/features/use-case-migration.svg" alt="Search and Replace Migration" class="w-12 h-12 mb-6 opacity-80" loading="lazy" />
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-4 border-b border-ink/20 pb-2">Use Case VI</div>
+                <h3 class="font-editorial text-2xl mb-3">Intelligent Migration</h3>
+                <p class="font-sans text-ink/80 text-sm leading-relaxed font-light">
+                    Moving domains? Agents parse the actual AST of Gutenberg blocks to execute surgical search-and-replace without breaking serialized strings.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Toolbelt (MCP Tools) Section -->
+    <section id="toolbelt" class="py-24 px-4 md:px-12 max-w-7xl mx-auto border-b border-ink/20">
+        <div class="text-center mb-16">
+            <h2 class="font-editorial text-5xl md:text-6xl mb-6">Complete Server Control.</h2>
+            <p class="font-sans text-ink/70 max-w-2xl mx-auto">WP AI Context doesn't just read. It acts. It exposes over 40+ native Model Context Protocol (MCP) tools directly to your AI agent.</p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 font-mono text-xs">
+            <div class="border border-ink/20 p-6 hover:bg-ink/5 transition-colors reveal">
+                <div class="font-bold mb-2">POST /patch-file</div>
+                <div class="text-ink/60 font-sans">Edit PHP/CSS/JS with automatic rollback on fatal errors.</div>
+            </div>
+            <div class="border border-ink/20 p-6 hover:bg-ink/5 transition-colors reveal reveal-delay-1">
+                <div class="font-bold mb-2">POST /execute-wp-cli</div>
+                <div class="text-ink/60 font-sans">Full WP-CLI access to manage plugins, users, and options.</div>
+            </div>
+            <div class="border border-ink/20 p-6 hover:bg-ink/5 transition-colors reveal reveal-delay-2">
+                <div class="font-bold mb-2">POST /run-sql-query</div>
+                <div class="text-ink/60 font-sans">Execute read-only SQL queries against the WordPress database.</div>
+            </div>
+            <div class="border border-ink/20 p-6 hover:bg-ink/5 transition-colors reveal">
+                <div class="font-bold mb-2">POST /evaluate-php-sandbox</div>
+                <div class="text-ink/60 font-sans">Safely test PHP snippets in an isolated WP environment.</div>
+            </div>
+            <div class="border border-ink/20 p-6 hover:bg-ink/5 transition-colors reveal reveal-delay-1">
+                <div class="font-bold mb-2">POST /tail-debug-log</div>
+                <div class="text-ink/60 font-sans">Stream the last N lines of your debug.log instantly.</div>
+            </div>
+            <div class="border border-ink/20 p-6 hover:bg-ink/5 transition-colors reveal reveal-delay-2">
+                <div class="font-bold mb-2">POST /auto-plugin-bisect</div>
+                <div class="text-ink/60 font-sans">Automate binary-search conflict testing to find broken plugins.</div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-12">
+            <button onclick="toggleEndpoints()" class="font-sans text-xs uppercase tracking-widest text-ink/60 hover:text-ink transition-colors cursor-pointer border-b border-ink/30 hover:border-ink pb-1">
+                <span id="endpoints-toggle-text">+ 46 MORE NATIVE ENDPOINTS</span>
+            </button>
+        </        <!-- Hidden Endpoints List -->
+        <div id="more-endpoints" class="hidden mt-16 max-w-5xl mx-auto">
+            <div id="endpoint-tiles" class="flex flex-wrap justify-center gap-3 font-mono text-[10px]">
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/generate</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/propose-action</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/read-file</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/hash-files</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/scan-regex</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/install-package</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/flush-cache</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/manage-plugin-state</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/investigate-hooks</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/render-shortcode</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/run-site-health-check</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/manage-option</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/inspect-template-hierarchy</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/manage-wp-cron</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/generate-magic-login</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/sideload-media</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/simulate-wp-query</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/manage-rewrite-rules</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/get-schema-registry</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/manage-post</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/test-wp-mail</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/get-enqueued-assets</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/check-server-env</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/manage-users-roles</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/inspect-rest-api</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/manage-transients</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/inspect-theme-widgets</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/verify-core-checksums</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/inspect-nav-menus</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/audit-admin-accounts</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/scan-suspicious-code</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/audit-file-permissions</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/inspect-security-flags</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/get-dependency-manifest</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/analyze-db-tables</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/optimize-db-tables</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/trace-redirect-chain</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/inspect-seo-metadata</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/regenerate-attachment</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/parse-gutenberg-blocks</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/monitor-slow-queries</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/patch-wp-config</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/inspect-woo-system-status</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/export-wp-data</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/get-query-monitor-profile</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/refactor-code-rector</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/ask-openai</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/extract-phpdoc</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/generate-dummy-data</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/manage-git-repository</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/audit-composer-security</div>
+                <div class="endpoint-tile opacity-0 transform translate-y-4 px-4 py-2 border border-ink/20 rounded-full bg-paper hover:bg-ink hover:text-paper transition-all duration-300 shadow-sm cursor-default"><span class="opacity-50 mr-2">POST</span>/format-wp-standards</div>
+            </div>
+        </div>
+
+        <script>
+            function toggleEndpoints() {
+                const container = document.getElementById('more-endpoints');
+                const text = document.getElementById('endpoints-toggle-text');
+                const tiles = document.querySelectorAll('.endpoint-tile');
+                
+                if (container.classList.contains('hidden')) {
+                    container.classList.remove('hidden');
+                    text.innerText = "- HIDE ENDPOINTS";
+                    
+                    // Stagger animation
+                    tiles.forEach((tile, index) => {
+                        setTimeout(() => {
+                            tile.style.transitionTimingFunction = "cubic-bezier(0.175, 0.885, 0.32, 1.275)"; // spring ease-out
+                            tile.classList.remove('opacity-0', 'translate-y-4');
+                            tile.classList.add('opacity-100', 'translate-y-0');
+                        }, index * 20); // 20ms delay between each tile
+                    });
+                } else {
+                    text.innerText = "+ 46 MORE NATIVE ENDPOINTS";
+                    
+                    // Reverse stagger
+                    tiles.forEach((tile, index) => {
+                        setTimeout(() => {
+                            tile.style.transitionTimingFunction = "ease-in";
+                            tile.classList.remove('opacity-100', 'translate-y-0');
+                            tile.classList.add('opacity-0', 'translate-y-4');
+                        }, (tiles.length - index) * 10);
+                    });
+
+                    setTimeout(() => {
+                        container.classList.add('hidden');
+                    }, tiles.length * 10 + 300);
+                }
+            }
+        </script>
+    </section>
+
+    <!-- Integrations Section -->
+    <section class="py-24 border-y border-ink/20">
+        <div class="max-w-6xl mx-auto px-4 text-center">
+            <h2 class="font-editorial text-5xl md:text-6xl mb-12">The Ecosystem</h2>
+            <div class="flex flex-wrap justify-center gap-4 text-xs font-mono tracking-widest text-ink/70">
+                <div class="px-8 py-4 border border-ink/20 hover:bg-ink/5 hover:text-ink transition-colors flex items-center gap-3 reveal">
+                    <img src="assets/images/logos/openai.svg" class="w-4 h-4 opacity-60 mix-blend-multiply" alt="ChatGPT Logo" />
+                    <span>CHATGPT</span>
+                </div>
+                <div class="px-8 py-4 border border-ink/20 hover:bg-ink/5 hover:text-ink transition-colors flex items-center gap-3 reveal reveal-delay-1">
+                    <img src="assets/images/logos/anthropic.svg" class="w-4 h-4 opacity-60 mix-blend-multiply" alt="Claude Logo" />
+                    <span>CLAUDE</span>
+                </div>
+                <div class="px-8 py-4 border border-ink/20 hover:bg-ink/5 hover:text-ink transition-colors flex items-center gap-3 reveal reveal-delay-2">
+                    <img src="assets/images/logos/gemini.svg" class="w-4 h-4 opacity-60 mix-blend-multiply" alt="Gemini Logo" />
+                    <span>GEMINI</span>
+                </div>
+                <div class="px-8 py-4 border border-ink/20 hover:bg-ink/5 hover:text-ink transition-colors flex items-center gap-3 reveal reveal-delay-1">
+                    <img src="assets/images/logos/wordpress.svg" class="w-4 h-4 opacity-60 mix-blend-multiply" alt="WordPress Logo" />
+                    <span>WORDPRESS CORE</span>
+                </div>
+                <div class="px-8 py-4 border border-ink/20 hover:bg-ink/5 hover:text-ink transition-colors flex items-center gap-3 reveal reveal-delay-2">
+                    <img src="assets/images/logos/woocommerce.svg" class="w-4 h-4 opacity-60 mix-blend-multiply" alt="WooCommerce Logo" />
+                    <span>WOOCOMMERCE</span>
+                </div>
+                <div class="px-8 py-4 border border-ink/20 hover:bg-ink/5 hover:text-ink transition-colors flex items-center gap-3 reveal reveal-delay-3">
+                    <img src="assets/images/logos/elementor.svg" class="w-4 h-4 opacity-60 mix-blend-multiply" alt="Elementor Logo" />
+                    <span>ELEMENTOR</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Security Section -->
+    <section id="security" class="py-24 px-4 md:px-12 bg-ink text-paper border-y border-paper/20">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <div class="text-xs uppercase tracking-widest text-paper/50 mb-6">Security by Design</div>
+                <h2 class="font-editorial text-5xl md:text-6xl mb-6">Zero Trust Redaction.</h2>
+                <p class="font-sans text-paper/80 leading-relaxed font-light text-lg max-w-2xl mx-auto">
+                    Your context is powerful, but your secrets are sacred. The AI Context Engine employs an aggressive, deny-by-default privacy filter before any data leaves your server.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 border-t border-paper/20 pt-16">
+                <div class="reveal">
+                    <h3 class="font-editorial text-2xl mb-4">Recursive Masking</h3>
+                    <p class="font-sans text-paper/60 text-sm leading-relaxed font-light">
+                        The engine recursively scans your database options and JSON payloads, instantly hard-replacing any Stripe keys, OpenAI tokens, or authentication hashes with <code class="bg-paper/10 px-1 py-0.5 rounded text-paper/90 text-xs font-mono">********</code>.
+                    </p>
+                </div>
+                <div class="reveal reveal-delay-1">
+                    <h3 class="font-editorial text-2xl mb-4">Config Scrubbing</h3>
+                    <p class="font-sans text-paper/60 text-sm leading-relaxed font-light">
+                        Raw files like <code class="bg-paper/10 px-1 py-0.5 rounded text-paper/90 text-xs font-mono">wp-config.php</code> and error logs are passed through a strict Regex engine that strips database passwords, URI credentials, and cryptographic salts.
+                    </p>
+                </div>
+                <div class="reveal reveal-delay-2">
+                    <h3 class="font-editorial text-2xl mb-4">DPDP & PII Compliant</h3>
+                    <p class="font-sans text-paper/60 text-sm leading-relaxed font-light">
+                        Enterprise-ready data compliance. The system automatically detects and scrubs Personally Identifiable Information (PII) including emails, IPv4 addresses, and phone numbers.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="mt-16 text-center reveal">
+                <p class="font-sans text-paper/50 italic text-sm">
+                    What the AI sees is structural. What remains hidden is strictly yours.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Before & After Section -->
+    <section id="before-after" class="py-24 px-4 md:px-12 max-w-7xl mx-auto border-b border-ink/20">
+        <div class="text-center mb-16">
+            <h2 class="font-editorial text-5xl md:text-6xl mb-6">See the difference.</h2>
+            <p class="uppercase tracking-widest text-xs opacity-70">Context changes everything.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div class="border border-ink/20 p-8 reveal">
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-6 border-b border-ink/20 pb-4">Before (No Context)</div>
+                <div class="mb-4">
+                    <span class="font-bold text-xs uppercase">Prompt:</span>
+                    <p class="font-sans text-sm italic mb-4">"Write a function to add a product to the cart."</p>
+                </div>
+                <div>
+                    <span class="font-bold text-xs uppercase text-red-600">AI Output:</span>
+                    <p class="font-mono text-xs mt-2 text-ink/70 bg-ink/5 p-4">WC()->cart->add_to_cart($product_id);</p>
+                    <p class="font-sans text-xs mt-4 text-red-600 font-bold">❌ FATAL ERROR. AI hallucinates standard functions, causing the dreaded White Screen of Death.</p>
+                </div>
+            </div>
+            <!-- After -->
+            <div class="border border-ink p-8 bg-ink text-paper reveal reveal-delay-1 relative shadow-2xl">
+                <div class="absolute -top-3 -right-3 bg-white text-ink text-[9px] font-bold px-2 py-1 uppercase tracking-widest border border-ink">WSOD-FREE ZONE</div>
+                <div class="text-xs uppercase tracking-widest text-paper/50 mb-6 border-b border-paper/20 pb-4">After (WP AI Context)</div>
+                <div class="mb-4">
+                    <span class="font-bold text-xs uppercase">Prompt:</span>
+                    <p class="font-sans text-sm italic mb-4">"Write a function to add a product to the cart. [Attached Context Package]"</p>
+                </div>
+                <div>
+                    <span class="font-bold text-xs uppercase text-emerald-400">AI Output:</span>
+                    <p class="font-mono text-xs mt-2 text-paper/70 bg-paper/10 p-4">add_action('elementor_pro/custom_cart_hook', ...);</p>
+                    <p class="font-sans text-xs mt-4 text-emerald-400 font-bold">✅ Perfect code. And if the AI ever makes a mistake, the internal Git Manager instantly auto-rolls back. 100% WSoD Free.</p>
+                </div>        
+            </div>
+        </div>
+    </section>
+
+    <!-- Status Quo Section -->
+    <section id="status-quo" class="py-24 px-4 md:px-12 bg-paper border-b border-ink/20">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="font-editorial text-5xl md:text-6xl mb-6">Stop working like it's 2021.</h2>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8 font-sans">
+                <div class="text-center reveal">
+                    <div class="text-4xl font-light mb-2 text-ink/40">2 hours</div>
+                    <div class="text-xs uppercase tracking-widest">Manual Debugging</div>
+                </div>
+                <div class="hidden md:block w-px h-16 bg-ink/20"></div>
+                <div class="text-center reveal reveal-delay-1">
+                    <div class="text-4xl font-light mb-2 text-ink/40">20 mins</div>
+                    <div class="text-xs uppercase tracking-widest">Taking 15 Screenshots</div>
+                </div>
+                <div class="hidden md:block w-px h-16 bg-ink/20"></div>
+                <div class="text-center reveal reveal-delay-2">
+                    <div class="text-5xl font-editorial italic mb-2">2 seconds</div>
+                    <div class="text-xs uppercase tracking-widest font-bold">WP AI Context Engine</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Explorer Section -->
+    <section id="explorer" class="py-24 px-4 md:px-12 bg-paper border-b border-ink/20">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-editorial text-4xl md:text-5xl mb-4">See what the AI sees.</h2>
+                <p class="font-sans text-xs text-ink/70 uppercase tracking-widest">100% structured. 100% redacted.</p>
+            </div>
+            
+            <div class="border border-ink bg-[#0a0a0a] text-paper shadow-2xl rounded-sm overflow-hidden reveal reveal-delay-1">
+                <!-- Terminal Header -->
+                <div class="flex items-center justify-between px-4 py-4 border-b border-paper/10 bg-[#050505]">
+                    <div class="flex gap-2 w-20">
+                        <div class="w-2.5 h-2.5 rounded-full border border-paper/30 hover:bg-red-500 transition-colors"></div>
+                        <div class="w-2.5 h-2.5 rounded-full border border-paper/30 hover:bg-yellow-500 transition-colors"></div>
+                        <div class="w-2.5 h-2.5 rounded-full border border-paper/30 hover:bg-green-500 transition-colors"></div>
+                    </div>
+                    <div class="flex flex-1 justify-center text-[10px] font-mono uppercase tracking-widest text-paper/40 space-x-8">
+                        <button class="terminal-tab active hover:text-paper transition-colors text-paper" data-target="tab-payload">context.json</button>
+                        <button class="terminal-tab hover:text-paper transition-colors" data-target="tab-config">wp-config.php</button>
+                        <button class="terminal-tab hover:text-paper transition-colors" data-target="tab-schema">api-schema.json</button>
+                    </div>
+                    <div class="w-20 flex justify-end">
+                        <button id="copy-btn" class="text-[9px] uppercase tracking-widest text-paper/40 hover:text-paper transition-colors flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <span>Copy</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Terminal Body -->
+                <div class="p-6 md:p-8 font-mono text-[13px] leading-relaxed overflow-x-auto h-[420px] overflow-y-auto">
+                    <!-- Tab 1 -->
+                    <div id="tab-payload" class="terminal-content">
+<pre class="text-paper/90 relative">
+{
+  <span class="text-paper/40">"system"</span>: {
+    <span class="text-paper/40">"wp_version"</span>: <span class="text-emerald-400/70">"6.4.2"</span>,
+    <span class="text-paper/40">"php_version"</span>: <span class="text-emerald-400/70">"8.1.0"</span>,
+    <span class="text-paper/40">"active_theme"</span>: <span class="text-emerald-400/70">"twentytwentyfour"</span>,
+    <span class="text-paper/40">"active_plugins"</span>: [
+      <span class="text-emerald-400/70">"woocommerce/woocommerce.php"</span>,
+      <span class="text-emerald-400/70">"elementor-pro/elementor-pro.php"</span>
+    ]
+  },
+  <span class="text-paper/40">"database"</span>: {
+    <span class="text-paper/40">"tables"</span>: <span class="text-orange-400/70">42</span>,
+    <span class="text-paper/40">"prefix"</span>: <span class="text-emerald-400/70">"wp_"</span>
+  },
+  <span class="text-paper/40">"security"</span>: {
+    <span class="text-paper/40">"redaction_engine"</span>: <span class="text-emerald-400/70">"active"</span>,
+    <span class="text-paper/40">"pii_scrubbed"</span>: <span class="text-orange-400/70">true</span>
+  }
+}<span class="animate-pulse font-bold text-emerald-400">_</span>
+</pre>
+                    </div>
+
+                    <!-- Tab 2 -->
+                    <div id="tab-config" class="terminal-content hidden">
+<pre class="text-paper/90 relative">
+<span class="text-paper/40">&lt;?php</span>
+<span class="text-paper/40 italic">/**
+ * The base configuration for WordPress
+ * <span class="text-red-400 font-bold not-italic">[REDACTED BY AI CONTEXT ENGINE]</span>
+ */</span>
+
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'DB_NAME'</span>, <span class="text-emerald-400/70">'wp_production'</span> );
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'DB_USER'</span>, <span class="text-emerald-400/70">'wp_db_user'</span> );
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'DB_PASSWORD'</span>, <span class="text-red-400 font-bold">'********'</span> );
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'DB_HOST'</span>, <span class="text-emerald-400/70">'localhost'</span> );
+
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'AUTH_KEY'</span>,         <span class="text-red-400 font-bold">'********'</span> );
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'SECURE_AUTH_KEY'</span>,  <span class="text-red-400 font-bold">'********'</span> );
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'LOGGED_IN_KEY'</span>,    <span class="text-red-400 font-bold">'********'</span> );
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'NONCE_KEY'</span>,        <span class="text-red-400 font-bold">'********'</span> );
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'AUTH_SALT'</span>,        <span class="text-red-400 font-bold">'********'</span> );
+
+<span class="text-paper/40 italic">/* Stripe API Keys */</span>
+<span class="text-blue-400/70">define</span>( <span class="text-emerald-400/70">'STRIPE_SECRET_KEY'</span>, <span class="text-red-400 font-bold">'sk-********'</span> );
+<span class="animate-pulse font-bold text-emerald-400">_</span>
+</pre>
+                    </div>
+
+                    <!-- Tab 3 -->
+                    <div id="tab-schema" class="terminal-content hidden">
+<pre class="text-paper/90 relative">
+{
+  <span class="text-paper/40">"endpoints"</span>: {
+    <span class="text-paper/40">"/wp-json/wc/v3/products"</span>: {
+      <span class="text-paper/40">"methods"</span>: [<span class="text-emerald-400/70">"GET"</span>, <span class="text-emerald-400/70">"POST"</span>],
+      <span class="text-paper/40">"args"</span>: {
+        <span class="text-paper/40">"name"</span>: { <span class="text-paper/40">"required"</span>: <span class="text-orange-400/70">true</span>, <span class="text-paper/40">"type"</span>: <span class="text-emerald-400/70">"string"</span> },
+        <span class="text-paper/40">"regular_price"</span>: { <span class="text-paper/40">"required"</span>: <span class="text-orange-400/70">false</span>, <span class="text-paper/40">"type"</span>: <span class="text-emerald-400/70">"string"</span> }
+      }
+    },
+    <span class="text-paper/40">"/wp-json/wp/v2/users"</span>: {
+      <span class="text-paper/40">"methods"</span>: [<span class="text-emerald-400/70">"GET"</span>],
+      <span class="text-paper/40">"args"</span>: {
+        <span class="text-paper/40">"email"</span>: <span class="text-red-400 font-bold">"[REDACTED_EMAIL]"</span>,
+        <span class="text-paper/40">"ip_address"</span>: <span class="text-red-400 font-bold">"[REDACTED_IP]"</span>,
+        <span class="text-paper/40">"phone"</span>: <span class="text-red-400 font-bold">"[REDACTED_PHONE]"</span>
+      }
+    }
+  }
+}<span class="animate-pulse font-bold text-emerald-400">_</span>
+</pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const tabs = document.querySelectorAll('.terminal-tab');
+                const contents = document.querySelectorAll('.terminal-content');
+                const copyBtn = document.getElementById('copy-btn');
+                const copyText = copyBtn.querySelector('span');
+
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        tabs.forEach(t => t.classList.remove('text-paper'));
+                        contents.forEach(c => c.classList.add('hidden'));
+
+                        tab.classList.add('text-paper');
+                        document.getElementById(tab.dataset.target).classList.remove('hidden');
+                        
+                        copyText.textContent = 'Copy';
+                    });
+                });
+
+                copyBtn.addEventListener('click', () => {
+                    const activePre = document.querySelector('.terminal-content:not(.hidden) pre');
+                    if (activePre) {
+                        const text = activePre.innerText.replace(/_$/, '').trim();
+                        navigator.clipboard.writeText(text).then(() => {
+                            copyText.textContent = 'Copied!';
+                            setTimeout(() => { copyText.textContent = 'Copy'; }, 2000);
+                        });
+                    }
+                });
+            });
+        </script>
+    <!-- FAQ Section -->
+    <section id="faq" class="py-24 px-4 md:px-12 bg-paper border-b border-ink/20">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-editorial text-4xl md:text-5xl mb-4">Technical FAQ.</h2>
+                <p class="font-sans text-xs text-ink/70 uppercase tracking-widest">No marketing fluff. Just the architecture.</p>
+            </div>
+            
+            <div class="border-t border-ink/20">
+                <!-- FAQ Item 1 -->
+                <div class="faq-item group border-b border-ink/20 reveal">
+                    <button class="w-full py-8 flex items-center justify-between text-left focus:outline-none transition-colors hover:bg-ink/5 px-4 md:px-8">
+                        <div class="flex items-center gap-6">
+                            <span class="font-editorial text-2xl text-ink/40">01</span>
+                            <span class="font-sans text-sm md:text-base font-bold uppercase tracking-wide">Does this send my database to OpenAI?</span>
+                        </div>
+                        <span class="transform transition-transform duration-300 group-[.faq-open]:rotate-45 text-ink/40 text-2xl font-light">+</span>
+                    </button>
+                    <div class="faq-content overflow-hidden transition-all duration-500 max-h-0 px-4 md:px-8 bg-ink/5">
+                        <p class="font-sans text-sm leading-relaxed text-ink/70 pb-8 pr-12 font-light">
+                            <strong class="font-bold text-ink">Absolutely not.</strong> Context Engine is a headless local exporter. It generates a strictly redacted JSON payload that never leaves your server without your permission. You maintain 100% control over if, when, and how you share that payload with an LLM.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 2 -->
+                <div class="faq-item group border-b border-ink/20 reveal">
+                    <button class="w-full py-8 flex items-center justify-between text-left focus:outline-none transition-colors hover:bg-ink/5 px-4 md:px-8">
+                        <div class="flex items-center gap-6">
+                            <span class="font-editorial text-2xl text-ink/40">02</span>
+                            <span class="font-sans text-sm md:text-base font-bold uppercase tracking-wide">Will this slow down my production site?</span>
+                        </div>
+                        <span class="transform transition-transform duration-300 group-[.faq-open]:rotate-45 text-ink/40 text-2xl font-light">+</span>
+                    </button>
+                    <div class="faq-content overflow-hidden transition-all duration-500 max-h-0 px-4 md:px-8 bg-ink/5">
+                        <p class="font-sans text-sm leading-relaxed text-ink/70 pb-8 pr-12 font-light">
+                            <strong class="font-bold text-ink">Zero impact.</strong> The architecture and schema parsing routines are heavily cached via the WordPress Object Cache. The engine only runs its heavy extraction processes when you explicitly request an updated payload, consuming zero frontend resources for your visitors.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 3 -->
+                <div class="faq-item group border-b border-ink/20 reveal">
+                    <button class="w-full py-8 flex items-center justify-between text-left focus:outline-none transition-colors hover:bg-ink/5 px-4 md:px-8">
+                        <div class="flex items-center gap-6">
+                            <span class="font-editorial text-2xl text-ink/40">03</span>
+                            <span class="font-sans text-sm md:text-base font-bold uppercase tracking-wide">How does the WSoD auto-rollback actually work?</span>
+                        </div>
+                        <span class="transform transition-transform duration-300 group-[.faq-open]:rotate-45 text-ink/40 text-2xl font-light">+</span>
+                    </button>
+                    <div class="faq-content overflow-hidden transition-all duration-500 max-h-0 px-4 md:px-8 bg-ink/5">
+                        <p class="font-sans text-sm leading-relaxed text-ink/70 pb-8 pr-12 font-light">
+                            It leverages a built-in Git Manager and a <code class="bg-ink/10 px-1 py-0.5 rounded text-ink/90 font-mono text-[10px] uppercase tracking-widest">fatal_error_handler</code> hook. Before an AI applies any code patch, the plugin snapshots the branch. If the applied PHP triggers a 500 Fatal Error, the system catches the exception and instantly reverts the filesystem to the last known good commit before the site crashes.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- FAQ Item 4 -->
+                <div class="faq-item group border-b border-ink/20 reveal">
+                    <button class="w-full py-8 flex items-center justify-between text-left focus:outline-none transition-colors hover:bg-ink/5 px-4 md:px-8">
+                        <div class="flex items-center gap-6">
+                            <span class="font-editorial text-2xl text-ink/40">04</span>
+                            <span class="font-sans text-sm md:text-base font-bold uppercase tracking-wide">Which LLMs does this support?</span>
+                        </div>
+                        <span class="transform transition-transform duration-300 group-[.faq-open]:rotate-45 text-ink/40 text-2xl font-light">+</span>
+                    </button>
+                    <div class="faq-content overflow-hidden transition-all duration-500 max-h-0 px-4 md:px-8 bg-ink/5">
+                        <p class="font-sans text-sm leading-relaxed text-ink/70 pb-8 pr-12 font-light">
+                            Because the plugin outputs standardized Model Context Protocol (MCP) JSON, it is completely model-agnostic. It integrates flawlessly with Claude 3.5 Sonnet, GPT-4o, Google Gemini, or fully air-gapped local models via Ollama.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const faqItems = document.querySelectorAll('.faq-item');
+                
+                faqItems.forEach(item => {
+                    const button = item.querySelector('button');
+                    const content = item.querySelector('.faq-content');
+                    
+                    button.addEventListener('click', () => {
+                        const isOpen = item.classList.contains('faq-open');
+                        
+                        // Close all
+                        faqItems.forEach(faq => {
+                            faq.classList.remove('faq-open');
+                            faq.querySelector('.faq-content').style.maxHeight = null;
+                        });
+                        
+                        // Open clicked if it wasn't already open
+                        if (!isOpen) {
+                            item.classList.add('faq-open');
+                            content.style.maxHeight = content.scrollHeight + "px";
+                        }
+                    });
+                });
+            });
+        </script>
+    </section>
+
+    <!-- Lead Magnet Section -->
+    <section id="lead-magnet" class="py-24 px-4 md:px-12 max-w-7xl mx-auto">
+        <div class="border border-ink/20 flex flex-col md:flex-row items-center justify-between bg-ink/5 reveal overflow-hidden">
+            <!-- Left Column: Text & Form -->
+            <div class="md:w-1/2 p-12 md:p-24">
+                <div class="text-xs uppercase tracking-widest text-ink/50 mb-6">Free Resource</div>
+                <h2 class="font-editorial text-4xl mb-4">Not ready for the plugin? Master the prompt.</h2>
+                <p class="font-sans text-sm text-ink/80 leading-relaxed mb-8">Download <em>The Developer's Guide to AI-Assisted WordPress Debugging</em> and learn how to format your system info manually to get the best results from Claude and ChatGPT.</p>
+                <form class="flex flex-col gap-4">
+                    <input type="email" placeholder="ENTER YOUR EMAIL" required class="bg-white border border-ink/30 px-6 py-4 text-xs uppercase tracking-widest outline-none focus:border-ink transition-colors w-full placeholder:text-ink/30" />
+                    <button type="submit" class="bg-ink text-paper px-8 py-4 uppercase tracking-[0.2em] text-xs hover:bg-paper hover:text-ink border border-ink transition-all duration-500 w-full">
+                        Send me the guide
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Right Column: Visual -->
+            <div class="md:w-1/2 w-full p-12 md:p-24 bg-white flex justify-center items-center border-t md:border-t-0 md:border-l border-ink/10">
+                <img src="assets/images/lead-magnet/prompting-guide-cover.svg" alt="Cover of The Developer's Guide to AI-Assisted WordPress Debugging" class="w-full max-w-xs shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500" loading="lazy" />
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="download" class="py-32 px-4 text-center">
+        <h2 class="font-editorial text-5xl md:text-7xl mb-8">Ready to integrate?</h2>
+        <p class="font-sans text-sm uppercase tracking-widest text-ink/60 mb-12">Version 1.0.0 — Coming Soon. Join the waitlist.</p>
+        
+        <form class="max-w-md mx-auto flex flex-col sm:flex-row gap-4 justify-center">
+            <input type="email" placeholder="ENTER YOUR EMAIL" required class="bg-transparent border border-ink/30 px-6 py-4 text-xs uppercase tracking-widest outline-none focus:border-ink transition-colors w-full sm:w-auto flex-grow placeholder:text-ink/30" />
+            <button type="submit" class="bg-ink text-paper px-8 py-4 uppercase tracking-[0.2em] text-xs hover:bg-paper hover:text-ink border border-ink transition-all duration-500 whitespace-nowrap">
+                Request Access
+            </button>
+        </form>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-ink/20 py-8 px-4 md:px-12 flex flex-col md:flex-row justify-between items-center text-xs uppercase tracking-widest font-medium">
+        <div class="mb-4 md:mb-0 text-ink/50">
+            &copy; 2026 AI Context Engine
+        </div>
+        <div class="flex gap-8">
+            <a href="#" class="hover:text-ink/60 transition-colors">GitHub</a>
+            <a href="#" class="hover:text-ink/60 transition-colors">Documentation</a>
+            <a href="#" class="hover:text-ink/60 transition-colors">WordPress.org</a>
+        </div>
+        <div class="mt-4 md:mt-0 text-ink/50">
+            Designed by Abhinay Kalkhanday
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

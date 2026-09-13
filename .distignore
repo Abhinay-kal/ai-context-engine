@@ -1,0 +1,14 @@
+.git
+.github
+.gitignore
+.distignore
+node_modules
+vendor
+composer.json
+composer.lock
+package.json
+package-lock.json
+tailwind.config.js
+postcss.config.js
+src
+.DS_Store

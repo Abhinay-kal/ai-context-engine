@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@source "../src";
+@source "../admin/views";
+@source "../includes";
+
+@theme {
+  --color-ghblue: #0969da;
+  --color-ghbluehover: #0353b3;
+  --color-textmain: #24292f;
+  --color-textmuted: #57606a;
+  --color-graybg: #f6f8fa;
+  --color-bordergray: #d0d7de;
+  --color-ambient-50: #f0fdfa;
+  --color-ambient-100: #ccfbf1;
+  --color-ambient-200: #99f6e4;
+  --color-ambient-500: #14b8a6;
+  --color-ambient-900: #134e4a;
+}

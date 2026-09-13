@@ -1,0 +1,29 @@
+{
+  "name": "mcp-context-export",
+  "version": "1.0.0",
+  "description": "**WP AI Context** is a WordPress plugin that exports your site's configuration into an AI-friendly format. When you need help from ChatGPT, Claude, or Gemini regarding your WordPress setup, this plugin gives the AI the exact context it needs—reducing hallucinations and avoiding the need for dozens of screenshots.",
+  "main": "index.js",
+  "scripts": {
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Abhinay-kal/MCP-Context-export.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Abhinay-kal/MCP-Context-export/issues"
+  },
+  "homepage": "https://github.com/Abhinay-kal/MCP-Context-export#readme",
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "@wordpress/scripts": "^34.0.0",
+    "autoprefixer": "^10.5.4",
+    "postcss": "^8.5.25",
+    "tailwindcss": "^4.3.3"
+  }
+}

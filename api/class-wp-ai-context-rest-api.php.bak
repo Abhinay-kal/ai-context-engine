@@ -1,0 +1,3248 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+/**
+ * REST API Endpoint for Context Generation
+ * Allows remote AI agents to securely fetch context via Application Passwords.
+ */
+class WP_AI_Context_REST_API {
+
+	/**
+	 * Register the REST routes.
+	 */
+	public function register_routes() {
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/generate',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE, // POST request
+				'callback'            => $this->safe_callback( 'generate_context_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		// Phase 5: AI Proposes a fix
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/propose-action',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'callback'            => $this->safe_callback( 'propose_action_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		// Issue 3 Fix: File Patching API
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/patch-file',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'patch_file_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		// Issue 4: Zip Package Installation API
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/install-package',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'install_package_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		// AI Action Approval Bypass API
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/approve-action',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'approve_action_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		// AI Action Approval Bypass API
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/approve-action',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'approve_action_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		// Forensic API Endpoints
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/read-file',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'read_file_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/hash-files',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'hash_files_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/scan-regex',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'scan_regex_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		// Advanced AI Tools
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/execute-wp-cli',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'execute_wp_cli_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/run-sql-query',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'run_sql_query_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/flush-cache',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'flush_cache_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/manage-plugin-state',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'manage_plugin_state_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/investigate-hooks',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'investigate_hooks_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/render-shortcode',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'render_shortcode_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/run-site-health-check',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'run_site_health_check_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/manage-option',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'manage_option_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/evaluate-php-sandbox',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'evaluate_php_sandbox_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/inspect-template-hierarchy',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'inspect_template_hierarchy_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/manage-wp-cron',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'manage_wp_cron_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/generate-magic-login',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'generate_magic_login_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/sideload-media',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'sideload_media_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/magic-login-consume',
+			array(
+				'methods'             => 'GET',
+				'callback'            => $this->safe_callback( 'magic_login_consume_callback' ),
+				'permission_callback' => '__return_true', // Public, because it validates via the token
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/simulate-wp-query',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'simulate_wp_query_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/manage-rewrite-rules',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'manage_rewrite_rules_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/get-schema-registry',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'get_schema_registry_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/manage-post',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'manage_post_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/tail-debug-log',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'tail_debug_log_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/test-wp-mail',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'test_wp_mail_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/get-enqueued-assets',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'get_enqueued_assets_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/check-server-env',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'check_server_env_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/manage-users-roles',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'manage_users_roles_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/auto-plugin-bisect',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'auto_plugin_bisect_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/inspect-rest-api',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'inspect_rest_api_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/manage-transients',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'manage_transients_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/inspect-theme-widgets',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'inspect_theme_widgets_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/verify-core-checksums',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'verify_core_checksums_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/inspect-nav-menus',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'inspect_nav_menus_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/audit-admin-accounts',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'audit_admin_accounts_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/scan-suspicious-code',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'scan_suspicious_code_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/audit-file-permissions',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'audit_file_permissions_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/inspect-security-flags',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'inspect_security_flags_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/get-dependency-manifest',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'get_dependency_manifest_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/analyze-db-tables',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'analyze_db_tables_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/optimize-db-tables',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'optimize_db_tables_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/trace-redirect-chain',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'trace_redirect_chain_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/inspect-seo-metadata',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'inspect_seo_metadata_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/regenerate-attachment',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'regenerate_attachment_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/parse-gutenberg-blocks',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'parse_gutenberg_blocks_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/monitor-slow-queries',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'monitor_slow_queries_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/patch-wp-config',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'patch_wp_config_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/inspect-woo-system-status',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'inspect_woo_system_status_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/export-wp-data',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'export_wp_data_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/get-query-monitor-profile',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'get_query_monitor_profile_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/refactor-code-rector',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'refactor_code_rector_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/ask-openai',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'ask_openai_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/extract-phpdoc',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'extract_phpdoc_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/generate-dummy-data',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'generate_dummy_data_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/manage-git-repository',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'manage_git_repository_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/audit-composer-security',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'audit_composer_security_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/format-wp-standards',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'format_wp_standards_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/execute-adapter-action',
+			array(
+				'methods'             => 'POST',
+				'callback'            => $this->safe_callback( 'execute_adapter_action_callback' ),
+				'permission_callback' => array( $this, 'check_permissions' ),
+			)
+		);
+
+		// Phase 4: Cloud Relay OpenAPI Schema
+		register_rest_route(
+			'wp-ai-context/v1',
+			'/openapi.json',
+			array(
+				'methods'             => 'GET',
+				'callback'            => $this->safe_callback( 'get_openapi_schema' ),
+				'permission_callback' => array( $this, 'check_permissions' ), // Restricted to authenticated users
+			)
+		);
+	}
+
+
+	/**
+	 * Wraps a callback in a try/catch block to prevent sensitive exception leaks.
+	 */
+	private function safe_callback( $method_name ) {
+		return function( WP_REST_Request $request ) use ( $method_name ) {
+			try {
+				return call_user_func( array( $this, $method_name ), $request );
+			} catch ( Throwable $e ) {
+				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+					error_log( 'WP AI Context REST error in ' . $method_name . ': ' . $e->getMessage() . "\n" . $e->getTraceAsString() );
+				}
+				return new WP_Error(
+					'rest_execution_error',
+					'An unexpected error occurred during execution. Check server logs.',
+					array( 'status' => 500 )
+				);
+			}
+		};
+	}
+
+	/**
+	 * Permission callback: strictly limit to administrators.
+
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function check_permissions( $request ) {
+		// RATE LIMITING FIX: Max 60 requests per minute per IP
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
+		$rate_limit_key = 'wp_ai_context_rate_limit_' . md5( $ip );
+		$requests = (int) get_transient( $rate_limit_key );
+		
+		if ( $requests >= 60 ) {
+			return new WP_Error( 'rest_too_many_requests', 'Rate limit exceeded (60 req/min). Please slow down your AI agent.', array( 'status' => 429 ) );
+		}
+		
+		set_transient( $rate_limit_key, $requests + 1, MINUTE_IN_SECONDS );
+
+		// SECURITY FIX: Only allow users with administrator-level permissions.
+		// Remote AI agents must use Application Passwords tied to an admin account.
+		if ( current_user_can( 'manage_options' ) ) {
+			return true;
+		}
+
+		// Optional secret-key auth (x-api-key header or "Authorization: Bearer ..."),
+		// matching the key configured on the admin page.
+		$api_key = WP_AI_Context::get_network_option( 'wp_ai_context_api_key', '' );
+		if ( ! empty( $api_key ) ) {
+			$header_key = $request->get_header( 'x-api-key' );
+			if ( empty( $header_key ) ) {
+				$auth = $request->get_header( 'authorization' );
+				if ( $auth && preg_match( '/^Bearer\s+(.+)$/i', $auth, $matches ) ) {
+					$header_key = $matches[1];
+				}
+			}
+			if ( ! empty( $header_key ) && wp_check_password( $header_key, $api_key ) ) {
+				return true;
+			}
+		}
+
+		return new WP_Error(
+			'rest_forbidden',
+			esc_html__( 'You do not have permission to generate AI context. Ensure you are authenticating with an Administrator account.', 'wp-ai-context' ),
+			array( 'status' => rest_authorization_required_code() )
+		);
+	}
+
+	/**
+	 * Rate limiting to prevent DoS attacks.
+	 */
+	private function enforce_rate_limit( $action, $max_requests = 20, $period = 60 ) {
+		$ip = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : 'unknown';
+		$key = 'wp_ai_rate_' . md5( $action . '_' . $ip );
+		$count = (int) get_transient( $key );
+		if ( $count >= $max_requests ) {
+			return new WP_Error( 'rate_limited', 'Too many requests. Please try again later.', array( 'status' => 429 ) );
+		}
+		set_transient( $key, $count + 1, $period );
+		return true;
+	}
+
+	/**
+	 * Decrypts E2EE payloads to bypass WAFs.
+	 */
+	private function get_decrypted_params( WP_REST_Request $request ) {
+		$params = $request->get_json_params();
+		if ( ! is_array( $params ) ) {
+			$params = array();
+		}
+		
+		if ( empty( $params['encrypted_payload'] ) ) {
+			return $params;
+		}
+
+		$header_key = $request->get_header( 'x-api-key' );
+		if ( empty( $header_key ) ) {
+			$auth = $request->get_header( 'authorization' );
+			if ( $auth && preg_match( '/^Bearer\s+(.+)$/i', $auth, $matches ) ) {
+				$header_key = $matches[1];
+			}
+		}
+
+		if ( ! empty( $header_key ) ) {
+			$payload_data = base64_decode( $params['encrypted_payload'] );
+			$iv_len = openssl_cipher_iv_length( 'aes-256-cbc' );
+			if ( strlen( $payload_data ) > $iv_len ) {
+				$iv = substr( $payload_data, 0, $iv_len );
+				$encrypted = substr( $payload_data, $iv_len );
+				$encryption_key = hash( 'sha256', $header_key, true );
+				
+				$decrypted_json = openssl_decrypt( $encrypted, 'aes-256-cbc', $encryption_key, OPENSSL_RAW_DATA, $iv );
+				if ( $decrypted_json !== false ) {
+					$decrypted_params = json_decode( $decrypted_json, true );
+					if ( is_array( $decrypted_params ) ) {
+						return array_merge( $params, $decrypted_params );
+					}
+				}
+			}
+		}
+		return $params;
+	}
+
+	/**
+	 * Handle the API request to generate context.
+	 *
+	 * @param WP_REST_Request $request
+	 * @return WP_REST_Response|WP_Error
+	 */
+	public function generate_context_callback( WP_REST_Request $request ) {
+		$rate_check = $this->enforce_rate_limit( 'generate_context', 10, 60 );
+		if ( is_wp_error( $rate_check ) ) {
+			return $rate_check;
+		}
+
+		// Cap execution time instead of disabling it entirely. Memory is guarded
+		// by the 80%-threshold check inside build_context_package().
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( 60 );
+		}
+
+		// OPTIMIZATION: Clear SAVEQUERIES to prevent memory leaks during DESCRIBE loops
+		global $wpdb;
+		if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES ) {
+			$wpdb->queries = array();
+		}
+
+		try {
+			$args = array(
+				'plugins'         => $request->get_param( 'plugins' ) ? (array) $request->get_param( 'plugins' ) : array(),
+				'tables'          => $request->get_param( 'tables' ) ? (array) $request->get_param( 'tables' ) : array(),
+				'theme_files'     => $request->get_param( 'theme_files' ) ? (array) $request->get_param( 'theme_files' ) : array(),
+				'mode'            => $request->get_param( 'mode' ) ? sanitize_text_field( $request->get_param( 'mode' ) ) : 'delta',
+				'include_logs'    => rest_sanitize_boolean( $request->get_param( 'include_logs' ) ),
+				'include_visuals' => rest_sanitize_boolean( $request->get_param( 'include_visuals' ) ),
+				'consent_given'   => rest_sanitize_boolean( $request->get_param( 'consent_given' ) ),
+			);
+
+			$wp_ai_context   = new WP_AI_Context();
+			$markdown_output = $wp_ai_context->build_context_package( $args );
+
+			// Return as a proper WP_REST_Response
+			$response = new WP_REST_Response( array( 'markdown' => $markdown_output ) );
+			$response->set_status( 200 );
+
+			return $response;
+
+		} catch ( Exception $e ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'WP AI Context REST generation error: ' . $e->getMessage() );
+			}
+			return new WP_Error(
+				'context_generation_failed',
+				'An unexpected error occurred during context generation.',
+				array( 'status' => 500 )
+			);
+		}
+	}
+
+	/**
+	 * Handle AI agent proposing an action to fix the site.
+	 */
+	public function propose_action_callback( WP_REST_Request $request ) {
+		$rate_check = $this->enforce_rate_limit( 'propose_action', 30, 60 );
+		if ( is_wp_error( $rate_check ) ) {
+			return $rate_check;
+		}
+
+		$params = $this->get_decrypted_params( $request );
+
+		$plugin_slug = isset( $params['plugin_slug'] ) ? sanitize_text_field( $params['plugin_slug'] ) : '';
+		$reason      = isset( $params['reason'] ) ? sanitize_textarea_field( $params['reason'] ) : '';
+		$changes     = isset( $params['changes'] ) ? $params['changes'] : array();
+
+		if ( empty( $plugin_slug ) || empty( $changes ) || ! is_array( $changes ) ) {
+			return new WP_Error( 'missing_params', 'plugin_slug and a changes array are required.', array( 'status' => 400 ) );
+		}
+
+		// SECURITY OPTIMIZATION: Use an allow-list for option modifications
+		$learned_options = get_option( 'wp_ai_context_learned_options', array() );
+		foreach ( $changes as $change ) {
+			if ( ! in_array( $change['key'], $learned_options, true ) ) {
+				return new WP_Error( 'security_violation', 'AI is not permitted to modify arbitrary or critical setting: ' . $change['key'], array( 'status' => 403 ) );
+			}
+		}
+
+		$pending   = WP_AI_Context::get_network_option( 'wp_ai_pending_actions', array() );
+		$action_id = uniqid( 'action_' );
+		
+		// DPDP ACT MINIMUM RETENTION: Delete any pending actions older than 24 hours
+		$current_time = current_time( 'timestamp' );
+		foreach ( $pending as $id => $data ) {
+			if ( isset( $data['date'] ) && ( $current_time - strtotime( $data['date'] ) ) > 86400 ) {
+				unset( $pending[ $id ] );
+			}
+		}
+
+		$pending[ $action_id ] = array(
+			'id'          => $action_id,
+			'plugin_slug' => $plugin_slug,
+			'changes'     => $changes, // Batched settings to save tokens
+			'reason'      => $reason,
+			'date'        => current_time( 'mysql' ),
+		);
+
+		WP_AI_Context::update_network_option( 'wp_ai_pending_actions', $pending );
+
+		return new WP_REST_Response(
+			array(
+				'success'   => true,
+				'action_id' => $action_id,
+				'message'   => 'Action proposed successfully and is awaiting human approval.',
+			),
+			201
+		);
+	}
+
+	/**
+	 * Handler for /wp-json/wp-ai-context/v1/patch-file
+	 * Allows AI to submit PHP/CSS/JS file edits safely via Sandbox.
+	 */
+	public function patch_file_callback( WP_REST_Request $request ) {
+		// Mark as AI operation for Deadman's Switch
+		if ( class_exists( 'WP_AI_Context_Git_Manager' ) ) {
+			WP_AI_Context_Git_Manager::$is_ai_operation = true;
+			WP_AI_Context_Git_Manager::take_snapshot( 'Pre-flight Snapshot: Patching file' );
+		}
+
+		$rate_check = $this->enforce_rate_limit( 'patch_file', 20, 60 );
+		if ( is_wp_error( $rate_check ) ) {
+			return $rate_check;
+		}
+
+		$params = $this->get_decrypted_params( $request );
+
+		if ( empty( $params['file_path'] ) ) {
+			return new WP_Error( 'missing_params', 'file_path is required', array( 'status' => 400 ) );
+		}
+
+		$file_path = sanitize_text_field( $params['file_path'] );
+		$reason    = sanitize_text_field( $params['reason'] ?? 'AI proposed file patch' );
+
+		if ( strpos( $file_path, '..' ) !== false ) {
+			return new WP_Error( 'invalid_path', 'Directory traversal is forbidden.', array( 'status' => 403 ) );
+		}
+
+		// Identify if this is a critical server file
+		$critical_files = array( '.htaccess', 'php.ini', '.user.ini', 'web.config', 'nginx.conf' );
+		foreach ( $critical_files as $critical ) {
+			if ( strpos( $file_path, $critical ) !== false ) {
+				return new WP_Error( 'invalid_file', 'Critical server files cannot be patched for security reasons.', array( 'status' => 403 ) );
+			}
+		}
+
+		// Security: Must be inside wp-content
+		// Auto-correct common missing wp-content prefix
+		if ( strpos( ltrim( $file_path, '/' ), 'themes/' ) === 0 || strpos( ltrim( $file_path, '/' ), 'plugins/' ) === 0 ) {
+			$file_path = 'wp-content/' . ltrim( $file_path, '/' );
+		}
+
+		$target_full_path = wp_normalize_path( ABSPATH . ltrim( $file_path, '/' ) );
+		$content_dir = wp_normalize_path( WP_CONTENT_DIR );
+		
+		if ( strpos( $target_full_path, $content_dir ) !== 0 ) {
+			return new WP_Error( 'out_of_bounds', 'Standard files can only be edited inside wp-content. Core modifications are forbidden.', array( 'status' => 403 ) );
+		}
+
+		// Extension Allow-list
+		$allowed_extensions = array( 'php', 'css', 'js', 'json', 'txt', 'md', 'html', 'xml' );
+		$ext = strtolower( pathinfo( $target_full_path, PATHINFO_EXTENSION ) );
+		if ( ! in_array( $ext, $allowed_extensions, true ) ) {
+			return new WP_Error( 'invalid_extension', 'Only standard text-based extensions (php, css, js, json, etc) can be written.', array( 'status' => 403 ) );
+		}
+
+		// Realpath Validation (prevent symlink escapes)
+		if ( file_exists( $target_full_path ) ) {
+			$real_path = wp_normalize_path( realpath( $target_full_path ) );
+			$real_content_dir = wp_normalize_path( realpath( WP_CONTENT_DIR ) );
+			if ( strpos( $real_path, $real_content_dir ) !== 0 ) {
+				return new WP_Error( 'symlink_escape', 'Target file resolves outside of allowed directories.', array( 'status' => 403 ) );
+			}
+		} else {
+			$real_dir = wp_normalize_path( realpath( dirname( $target_full_path ) ) );
+			$real_content_dir = wp_normalize_path( realpath( WP_CONTENT_DIR ) );
+			if ( $real_dir && strpos( $real_dir, $real_content_dir ) !== 0 ) {
+				return new WP_Error( 'symlink_escape', 'Target directory resolves outside of allowed directories.', array( 'status' => 403 ) );
+			}
+		}
+
+		$content = '';
+		if ( isset( $params['search_string'] ) && isset( $params['replace_string'] ) ) {
+			if ( ! file_exists( $target_full_path ) ) {
+				return new WP_Error( 'file_not_found', 'Target file not found for search/replace.', array( 'status' => 404 ) );
+			}
+			$original_content = file_get_contents( $target_full_path );
+			// Normalize line endings to avoid mismatch issues
+			$original_content_norm = str_replace( "\r\n", "\n", $original_content );
+			$search_norm = str_replace( "\r\n", "\n", $params['search_string'] );
+			$replace_norm = str_replace( "\r\n", "\n", $params['replace_string'] );
+
+			if ( strpos( $original_content_norm, $search_norm ) === false ) {
+				return new WP_Error( 'search_not_found', 'The provided search_string was not found in the file.', array( 'status' => 400 ) );
+			}
+			
+			$content = str_replace( $search_norm, $replace_norm, $original_content_norm );
+		} elseif ( isset( $params['content_base64'] ) ) {
+			$content = base64_decode( $params['content_base64'] );
+		} elseif ( isset( $params['content'] ) ) {
+			$content = $params['content'];
+		} else {
+			return new WP_Error( 'missing_params', 'You must provide either search_string/replace_string OR content/content_base64.', array( 'status' => 400 ) );
+		}
+
+		$execute_now = isset( $params['execute_now'] ) ? filter_var( $params['execute_now'], FILTER_VALIDATE_BOOLEAN ) : true; // Default to true for SaaS agents
+
+		if ( $execute_now ) {
+			// Ensure directory exists
+			$dir = dirname( $target_full_path );
+			if ( ! is_dir( $dir ) ) {
+				wp_mkdir_p( $dir );
+			}
+			$existing_content = file_exists( $target_full_path ) ? file_get_contents( $target_full_path ) : null;
+
+			// Write file immediately
+			$written = file_put_contents( $target_full_path, $content );
+			if ( $written === false ) {
+				return new WP_Error( 'write_failed', 'Failed to write to file due to permissions.', array( 'status' => 500 ) );
+			}
+
+			// CANARY LOOPBACK: Test the frontend for WSOD / Fatal Error
+			$response = wp_remote_get( home_url(), array( 'timeout' => 5 ) );
+			
+			$is_fatal = false;
+			if ( is_wp_error( $response ) ) {
+				$is_fatal = true;
+				$error_msg = $response->get_error_message();
+			} else {
+				$status_code = wp_remote_retrieve_response_code( $response );
+				$body = wp_remote_retrieve_body( $response );
+				if ( $status_code >= 500 || empty( trim( $body ) ) || strpos( $body, 'There has been a critical error on this website.' ) !== false ) {
+					$is_fatal = true;
+					$error_msg = 'HTTP ' . $status_code . ' or WSOD/Critical error body detected.';
+				}
+			}
+
+			if ( $is_fatal ) {
+				// Direct file rollback
+				if ( $existing_content !== null ) {
+					file_put_contents( $target_full_path, $existing_content );
+				} else {
+					unlink( $target_full_path );
+				}
+
+				if ( class_exists( 'WP_AI_Context_Git_Manager' ) ) {
+					WP_AI_Context_Git_Manager::rollback();
+				}
+				return new WP_Error( 'fatal_error_detected', 'CANARY FAILED: Your patch crashed the frontend (' . $error_msg . '). The site has been automatically rolled back. Please check your syntax and logic.', array( 'status' => 400 ) );
+			}
+
+			return new WP_REST_Response(
+				array(
+					'success' => true,
+					'message' => 'File patched and Canary Health Check passed.',
+				),
+				200
+			);
+		}
+
+		// Save as a pending file patch action (Fallback for manual review UI)
+		$pending   = WP_AI_Context::get_network_option( 'wp_ai_pending_actions', array() );
+		$action_id = wp_generate_uuid4();
+
+		$pending[ $action_id ] = array(
+			'id'          => $action_id,
+			'type'        => 'file_patch',
+			'file_path'   => $file_path,
+			'full_path'   => $target_full_path,
+			'content'     => $content,
+			'reason'      => $reason,
+			'is_critical' => false,
+			'date'        => current_time( 'mysql' ),
+		);
+
+		WP_AI_Context::update_network_option( 'wp_ai_pending_actions', $pending );
+
+		return new WP_REST_Response(
+			array(
+				'success'   => true,
+				'action_id' => $action_id,
+				'message'   => 'Saved as pending action for human review.',
+			),
+			200
+		);
+	}
+
+	/**
+	 * Handler for /wp-json/wp-ai-context/v1/install-package
+	 * Allows AI to submit zip files (themes/plugins) for installation.
+	 */
+	public function install_package_callback( WP_REST_Request $request ) {
+		$rate_check = $this->enforce_rate_limit( 'install_package', 10, 60 );
+		if ( is_wp_error( $rate_check ) ) {
+			return $rate_check;
+		}
+
+		$params = $this->get_decrypted_params( $request );
+
+		if ( empty( $params['package_zip_base64'] ) || empty( $params['package_type'] ) || empty( $params['package_name'] ) ) {
+			return new WP_Error( 'missing_params', 'package_zip_base64, package_type, and package_name are required', array( 'status' => 400 ) );
+		}
+
+		$package_type = sanitize_text_field( $params['package_type'] );
+		if ( ! in_array( $package_type, array( 'theme', 'plugin' ), true ) ) {
+			return new WP_Error( 'invalid_type', 'package_type must be theme or plugin.', array( 'status' => 400 ) );
+		}
+
+		$package_name = sanitize_file_name( $params['package_name'] );
+		$zip_data = base64_decode( $params['package_zip_base64'] );
+		
+		if ( $zip_data === false ) {
+			return new WP_Error( 'invalid_base64', 'Failed to decode zip data.', array( 'status' => 400 ) );
+		}
+
+		$upload_dir = wp_upload_dir();
+		$pending_dir = $upload_dir['basedir'] . '/wp-ai-context/pending_zips';
+		if ( ! file_exists( $pending_dir ) ) {
+			wp_mkdir_p( $pending_dir );
+			// Protect directory from web access
+			file_put_contents( $pending_dir . '/.htaccess', "Require all denied\nOptions -Indexes\n" );
+			file_put_contents( $pending_dir . '/index.html', '' );
+			file_put_contents( $pending_dir . '/index.php', '<?php // Silence is golden.' );
+		}
+
+		$zip_path = $pending_dir . '/' . $package_name . '_' . time() . '.zip';
+		file_put_contents( $zip_path, $zip_data );
+
+		// Save as a pending file patch action
+		$pending   = WP_AI_Context::get_network_option( 'wp_ai_pending_actions', array() );
+		$action_id = wp_generate_uuid4();
+
+		$pending[ $action_id ] = array(
+			'id'          => $action_id,
+			'type'        => 'install_package',
+			'package_type'=> $package_type,
+			'package_name'=> $package_name,
+			'zip_path'    => $zip_path,
+			'reason'      => sanitize_text_field( $params['reason'] ?? 'AI proposed package installation' ),
+			'date'        => current_time( 'mysql' ),
+		);
+
+		WP_AI_Context::update_network_option( 'wp_ai_pending_actions', $pending );
+
+		return new WP_REST_Response( array( 'success' => true, 'action_id' => $action_id ), 200 );
+	}
+
+	/**
+	 * Allows AI to bypass human approval and approve an action directly.
+	 */
+	public function approve_action_callback( WP_REST_Request $request ) {
+		$rate_check = $this->enforce_rate_limit( 'approve_action_rest', 50, 60 );
+		if ( is_wp_error( $rate_check ) ) {
+			return $rate_check;
+		}
+
+		$params = $this->get_decrypted_params( $request );
+
+		$action_id = isset( $params['action_id'] ) ? sanitize_text_field( $params['action_id'] ) : '';
+		if ( empty( $action_id ) ) {
+			return new WP_Error( 'missing_params', 'action_id is required', array( 'status' => 400 ) );
+		}
+
+		$context = WP_AI_Context::get_instance();
+		if ( ! method_exists( $context, 'execute_pending_action' ) ) {
+			return new WP_Error( 'method_not_found', 'execute_pending_action method not found.', array( 'status' => 500 ) );
+		}
+
+		$result = $context->execute_pending_action( $action_id );
+
+		if ( is_wp_error( $result ) ) {
+			return new WP_REST_Response( array( 'success' => false, 'message' => $result->get_error_message() ), 400 );
+		}
+
+		return new WP_REST_Response( array( 'success' => true, 'message' => $result ), 200 );
+	}
+
+	/**
+	 * Manage Code Snippets (Code Snippets / WPCode)
+	 */
+	public function execute_adapter_action_callback( WP_REST_Request $request ) {
+		$rate_check = $this->enforce_rate_limit( 'execute_adapter_action', 30, 60 );
+		if ( is_wp_error( $rate_check ) ) {
+			return $rate_check;
+		}
+
+		$params = $this->get_decrypted_params( $request );
+
+		$plugin = isset( $params['plugin'] ) ? sanitize_text_field( $params['plugin'] ) : '';
+		$action = isset( $params['action'] ) ? sanitize_text_field( $params['action'] ) : '';
+
+		if ( empty( $plugin ) || empty( $action ) ) {
+			return new WP_Error( 'missing_params', 'plugin and action are required.', array( 'status' => 400 ) );
+		}
+
+		if ( empty( $params['reasoning'] ) ) {
+			return new WP_Error( 'missing_reasoning', 'A detailed reasoning for this action is required to proceed. This is mandatory for AI operations.', array( 'status' => 400 ) );
+		}
+
+		// Use the Registry to get the appropriate adapter
+		$registry = new WP_AI_Context_Adapter_Registry();
+		$adapter = $registry->get_adapter( $plugin );
+
+		if ( ! $adapter ) {
+			return new WP_Error( 'adapter_not_found', 'No adapter found for the specified plugin.', array( 'status' => 404 ) );
+		}
+
+		// Validate parameters before execution
+		if ( method_exists( $adapter, 'validate_action_params' ) ) {
+			$validation = $adapter->validate_action_params( $action, $params );
+			if ( is_wp_error( $validation ) ) {
+				return $validation;
+			}
+		}
+
+		// Dry-Run (Sandbox) Mode check
+		$is_dry_run = get_option( 'wp_ai_context_dry_run', false );
+		if ( isset( $params['dry_run'] ) && rest_sanitize_boolean( $params['dry_run'] ) ) {
+			$is_dry_run = true;
+		}
+
+		if ( $is_dry_run ) {
+			return new WP_REST_Response( array(
+				'message' => 'Dry-Run Mode: Action validated successfully but not executed.',
+				'status'  => 200,
+				'action'  => $action,
+				'plugin'  => $plugin,
+				'dry_run' => true,
+			), 200 );
+		}
+
+		try {
+			// Delegate the action execution to the adapter
+			$result = $adapter->execute_action( $plugin, $action, $params );
+			
+			if ( is_wp_error( $result ) ) {
+				WP_AI_Context::log_action( $plugin, $action, $params, 'error', $result->get_error_message() );
+				return $result;
+			}
+			
+			if ( isset( $result['status'] ) && $result['status'] !== 200 ) {
+				WP_AI_Context::log_action( $plugin, $action, $params, 'error', wp_json_encode( $result ) );
+				return new WP_Error( 'action_failed', 'Action execution failed.', $result );
+			}
+
+			WP_AI_Context::log_action( $plugin, $action, $params, 'success', 'Action executed successfully via API.' );
+			return new WP_REST_Response( $result, 200 );
+		} catch ( Exception $e ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				error_log( 'WP AI Context Adapter Action Error: ' . $e->getMessage() );
+			}
+			WP_AI_Context::log_action( $plugin, $action, $params, 'error', 'Exception: ' . $e->getMessage() );
+			return new WP_Error( 'action_exception', 'An unexpected error occurred during action execution.', array( 'status' => 500 ) );
+		}
+	}
+
+	/**
+	 * Handler for /wp-json/wp-ai-context/v1/openapi.json
+	 * Returns the OpenAPI schema for Custom GPT integrations.
+	 */
+	public function get_openapi_schema() {
+		$generator = new WP_AI_Context_OpenAPI_Generator();
+		$schema    = $generator->get_schema();
+		return new WP_REST_Response( $schema, 200 );
+	}
+
+	/**
+	 * Forensic API: Read File
+	 */
+	public function read_file_callback( WP_REST_Request $request ) {
+		$file_path = $request->get_param( 'path' );
+		if ( empty( $file_path ) ) {
+			return new WP_Error( 'missing_path', 'File path is required.', array( 'status' => 400 ) );
+		}
+
+		$abs_path = realpath( ABSPATH . ltrim( $file_path, '/' ) );
+		if ( ! $abs_path || strpos( $abs_path, ABSPATH ) !== 0 || ! is_file( $abs_path ) ) {
+			return new WP_Error( 'invalid_path', 'Invalid or inaccessible file path.', array( 'status' => 403 ) );
+		}
+
+		$content = file_get_contents( $abs_path );
+		if ( $content === false ) {
+			return new WP_Error( 'read_error', 'Could not read file.', array( 'status' => 500 ) );
+		}
+
+		// Security: Mask sensitive information (like DB passwords in wp-config.php)
+		if ( class_exists( 'WP_AI_Context_Secret_Masker' ) ) {
+			$masker  = new WP_AI_Context_Secret_Masker();
+			$content = $masker->mask_string( $content );
+		}
+
+		return rest_ensure_response( array(
+			'path'    => $file_path,
+			'content' => $content,
+		) );
+	}
+
+	/**
+	 * Forensic API: Hash Files
+	 */
+	public function hash_files_callback( WP_REST_Request $request ) {
+		$files = $request->get_param( 'files' );
+		if ( empty( $files ) || ! is_array( $files ) ) {
+			return new WP_Error( 'missing_files', 'An array of file paths is required.', array( 'status' => 400 ) );
+		}
+
+		$hashes = array();
+		foreach ( $files as $file ) {
+			$abs_path = realpath( ABSPATH . ltrim( $file, '/' ) );
+			if ( $abs_path && strpos( $abs_path, ABSPATH ) === 0 && is_file( $abs_path ) ) {
+				$hashes[ $file ] = hash_file( 'sha256', $abs_path );
+			} else {
+				$hashes[ $file ] = 'Not found or inaccessible';
+			}
+		}
+
+		return rest_ensure_response( array( 'hashes' => $hashes ) );
+	}
+
+	/**
+	 * Forensic API: Scan Regex
+	 */
+	public function scan_regex_callback( WP_REST_Request $request ) {
+		$pattern = $request->get_param( 'pattern' );
+		$dir     = $request->get_param( 'directory' ); // e.g. 'wp-content/uploads'
+
+		if ( empty( $pattern ) || empty( $dir ) ) {
+			return new WP_Error( 'missing_params', 'Pattern and directory are required.', array( 'status' => 400 ) );
+		}
+
+		$abs_dir = realpath( ABSPATH . ltrim( $dir, '/' ) );
+		if ( ! $abs_dir || strpos( $abs_dir, ABSPATH ) !== 0 || ! is_dir( $abs_dir ) ) {
+			return new WP_Error( 'invalid_directory', 'Invalid or inaccessible directory.', array( 'status' => 403 ) );
+		}
+
+		$results = array();
+		$iterator = new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $abs_dir ) );
+		foreach ( $iterator as $file ) {
+			if ( $file->isFile() ) {
+				// Prevent scanning huge files to save memory
+				if ( $file->getSize() > 5 * 1024 * 1024 ) {
+					continue;
+				}
+				$content = file_get_contents( $file->getPathname() );
+				if ( preg_match( '/' . $pattern . '/i', $content ) ) {
+					$results[] = str_replace( ABSPATH, '', $file->getPathname() );
+				}
+			}
+		}
+
+		return rest_ensure_response( array(
+			'directory' => $dir,
+			'pattern'   => $pattern,
+			'matches'   => $results,
+		) );
+	}
+
+	/**
+	 * Advanced Tool: Execute WP-CLI Command
+	 */
+	public function execute_wp_cli_callback( WP_REST_Request $request ) {
+		// Mark as AI operation for Deadman's Switch
+		if ( class_exists( 'WP_AI_Context_Git_Manager' ) ) {
+			WP_AI_Context_Git_Manager::$is_ai_operation = true;
+			WP_AI_Context_Git_Manager::take_snapshot( 'Pre-flight Snapshot: WP-CLI execution' );
+		}
+
+		$command = $request->get_param( 'command' );
+		if ( empty( $command ) ) {
+			return new WP_Error( 'missing_command', 'WP-CLI command is required.', array( 'status' => 400 ) );
+		}
+		
+		// Strip 'wp ' prefix if provided
+		$command = preg_replace( '/^wp\s+/', '', $command );
+		
+		// Try to find the WP-CLI binary
+		$wp_cli_path = trim( shell_exec( 'which wp' ) );
+		if ( empty( $wp_cli_path ) ) {
+			if ( file_exists( '/usr/local/bin/wp' ) ) {
+				$wp_cli_path = '/usr/local/bin/wp';
+			} else {
+				return new WP_Error( 'wp_cli_not_found', 'WP-CLI is not installed or not in the system path.', array( 'status' => 501 ) );
+			}
+		}
+		
+		// Run command in ABSPATH safely
+		$output = shell_exec( "cd " . escapeshellarg( ABSPATH ) . " && " . escapeshellcmd( $wp_cli_path ) . " " . escapeshellcmd( $command ) . " --allow-root 2>&1" );
+		
+		return rest_ensure_response( array(
+			'command' => 'wp ' . $command,
+			'output'  => $output,
+		) );
+	}
+
+	/**
+	 * Advanced Tool: Run Read-Only SQL Query
+	 */
+	public function run_sql_query_callback( WP_REST_Request $request ) {
+		$query = $request->get_param( 'query' );
+		if ( empty( $query ) ) {
+			return new WP_Error( 'missing_query', 'SQL query is required.', array( 'status' => 400 ) );
+		}
+
+		// Security: Only allow SELECT or SHOW queries
+		if ( ! preg_match( '/^\s*(SELECT|SHOW|EXPLAIN|DESCRIBE)/i', $query ) ) {
+			return new WP_Error( 'invalid_query', 'Only read-only queries (SELECT, SHOW, EXPLAIN, DESCRIBE) are allowed for security reasons.', array( 'status' => 403 ) );
+		}
+
+		global $wpdb;
+		$wpdb->suppress_errors( true );
+		$results = $wpdb->get_results( $query, ARRAY_A );
+		
+		if ( $wpdb->last_error ) {
+			return new WP_Error( 'sql_error', $wpdb->last_error, array( 'status' => 400 ) );
+		}
+
+		// Optional: if the query exposes user passwords, mask them
+		if ( class_exists( 'WP_AI_Context_Secret_Masker' ) ) {
+			$masker = new WP_AI_Context_Secret_Masker();
+			$results = $masker->mask( $results );
+		}
+
+		return rest_ensure_response( array(
+			'query'   => $query,
+			'results' => $results,
+		) );
+	}
+
+	/**
+	 * Advanced Tool: Flush Cache
+	 */
+	public function flush_cache_callback( WP_REST_Request $request ) {
+		wp_cache_flush();
+		$messages = array( 'Object cache flushed.' );
+
+		if ( function_exists( 'wp_cache_clear_cache' ) ) {
+			wp_cache_clear_cache();
+			$messages[] = 'WP Super Cache cleared.';
+		}
+		
+		if ( function_exists( 'w3tc_flush_all' ) ) {
+			w3tc_flush_all();
+			$messages[] = 'W3 Total Cache cleared.';
+		}
+		
+		if ( function_exists( 'rocket_clean_domain' ) ) {
+			rocket_clean_domain();
+			$messages[] = 'WP Rocket cache cleared.';
+		}
+		
+		if ( class_exists( 'LiteSpeed\Purge' ) && method_exists( 'LiteSpeed\Purge', 'purge_all' ) ) {
+			\LiteSpeed\Purge::purge_all();
+			$messages[] = 'LiteSpeed Cache cleared.';
+		}
+
+		return rest_ensure_response( array(
+			'success'  => true,
+			'messages' => $messages,
+		) );
+	}
+
+	/**
+	 * Advanced Tool: Manage Plugin State
+	 */
+	public function manage_plugin_state_callback( WP_REST_Request $request ) {
+		$plugin_slug = $request->get_param( 'plugin_slug' ); 
+		$action      = $request->get_param( 'plugin_action' ); // Changed to plugin_action to avoid 'action' confusion
+
+		if ( empty( $plugin_slug ) || ! in_array( $action, array( 'activate', 'deactivate' ), true ) ) {
+			return new WP_Error( 'invalid_params', 'Valid plugin_slug and plugin_action (activate/deactivate) are required.', array( 'status' => 400 ) );
+		}
+
+		if ( ! function_exists( 'activate_plugin' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$plugin_file = WP_PLUGIN_DIR . '/' . $plugin_slug;
+		if ( ! file_exists( $plugin_file ) ) {
+			return new WP_Error( 'plugin_not_found', 'Plugin file not found on disk.', array( 'status' => 404 ) );
+		}
+
+		if ( $action === 'activate' ) {
+			$result = activate_plugin( $plugin_slug );
+			if ( is_wp_error( $result ) ) {
+				return $result;
+			}
+			$message = 'Plugin activated successfully.';
+		} else {
+			deactivate_plugins( $plugin_slug );
+			$message = 'Plugin deactivated successfully.';
+		}
+
+		return rest_ensure_response( array(
+			'success'       => true,
+			'plugin_slug'   => $plugin_slug,
+			'plugin_action' => $action,
+			'message'       => $message,
+		) );
+	}
+	/**
+	 * Advanced Tool: Investigate Hooks
+	 */
+	public function investigate_hooks_callback( WP_REST_Request $request ) {
+		$hook_name = $request->get_param( 'hook_name' );
+		if ( empty( $hook_name ) ) {
+			return new WP_Error( 'missing_hook', 'Hook name is required.', array( 'status' => 400 ) );
+		}
+
+		global $wp_filter;
+		if ( ! isset( $wp_filter[ $hook_name ] ) ) {
+			return rest_ensure_response( array(
+				'hook_name' => $hook_name,
+				'message'   => 'No functions are currently attached to this hook.',
+				'callbacks' => array(),
+			) );
+		}
+
+		$callbacks = array();
+		foreach ( $wp_filter[ $hook_name ] as $priority => $functions ) {
+			foreach ( $functions as $idx => $function ) {
+				$callback_name = '';
+				if ( is_array( $function['function'] ) ) {
+					if ( is_object( $function['function'][0] ) ) {
+						$callback_name = get_class( $function['function'][0] ) . '->' . $function['function'][1];
+					} elseif ( is_string( $function['function'][0] ) ) {
+						$callback_name = $function['function'][0] . '::' . $function['function'][1];
+					}
+				} elseif ( $function['function'] instanceof Closure ) {
+					$callback_name = 'Closure';
+				} elseif ( is_string( $function['function'] ) ) {
+					$callback_name = $function['function'];
+				} else {
+					$callback_name = 'Unknown Callback';
+				}
+
+				$callbacks[] = array(
+					'priority'      => $priority,
+					'callback_name' => $callback_name,
+					'accepted_args' => $function['accepted_args'],
+				);
+			}
+		}
+
+		return rest_ensure_response( array(
+			'hook_name' => $hook_name,
+			'callbacks' => $callbacks,
+		) );
+	}
+
+	/**
+	 * Advanced Tool: Render Shortcode
+	 */
+	public function render_shortcode_callback( WP_REST_Request $request ) {
+		$shortcode_string = $request->get_param( 'shortcode_string' );
+		if ( empty( $shortcode_string ) ) {
+			return new WP_Error( 'missing_shortcode', 'Shortcode string is required.', array( 'status' => 400 ) );
+		}
+
+		// Security: Check if it's actually a shortcode pattern
+		if ( strpos( $shortcode_string, '[' ) === false || strpos( $shortcode_string, ']' ) === false ) {
+			return new WP_Error( 'invalid_shortcode', 'Input does not appear to be a valid shortcode.', array( 'status' => 400 ) );
+		}
+
+		$html_output = do_shortcode( $shortcode_string );
+
+		return rest_ensure_response( array(
+			'shortcode' => $shortcode_string,
+			'html'      => $html_output,
+		) );
+	}
+
+	/**
+	 * Advanced Tool: Run Site Health Check
+	 */
+	public function run_site_health_check_callback( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WP_Site_Health' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-site-health.php';
+		}
+		
+		$site_health = WP_Site_Health::get_instance();
+		// Run direct tests
+		$tests = array(
+			'wordpress_version' => $site_health->get_test_wordpress_version(),
+			'plugin_version'    => $site_health->get_test_plugin_version(),
+			'theme_version'     => $site_health->get_test_theme_version(),
+			'php_version'       => $site_health->get_test_php_version(),
+			'php_extensions'    => $site_health->get_test_php_extensions(),
+			'sql_server'        => $site_health->get_test_sql_server(),
+			'rest_availability' => $site_health->get_test_rest_availability(),
+			'dotorg_communication'=> $site_health->get_test_dotorg_communication(),
+			'background_updates'=> $site_health->get_test_background_updates(),
+			'loopback_requests' => $site_health->get_test_loopback_requests(),
+			'authorization_header' => $site_health->get_test_authorization_header(),
+		);
+
+		return rest_ensure_response( array(
+			'success' => true,
+			'tests'   => $tests,
+		) );
+	}
+
+	/**
+	 * Advanced Tool: Manage Option (Get/Set)
+	 */
+	public function manage_option_callback( WP_REST_Request $request ) {
+		$option_name = $request->get_param( 'option_name' );
+		$action      = $request->get_param( 'action' ); // get or set
+		$option_value= $request->get_param( 'option_value' );
+
+		if ( empty( $option_name ) || ! in_array( $action, array( 'get', 'set' ), true ) ) {
+			return new WP_Error( 'invalid_params', 'Valid option_name and action (get/set) are required.', array( 'status' => 400 ) );
+		}
+		
+		// SECURITY FIX: Block modification of critical core options
+		$blocked_options = array(
+			'siteurl', 'home', 'admin_email', 'default_role',
+			'users_can_register', 'permalink_structure'
+		);
+		if ( $action === 'set' && in_array( $option_name, $blocked_options, true ) ) {
+			return new WP_Error( 'rest_forbidden', __( 'Modifying this critical option via AI is blocked for security.', 'wp-ai-context' ), array( 'status' => 403 ) );
+		}
+
+		$masker = null;
+		if ( class_exists( 'WP_AI_Context_Secret_Masker' ) ) {
+			$masker = new WP_AI_Context_Secret_Masker();
+		}
+
+		if ( $action === 'get' ) {
+			$value = get_option( $option_name );
+			if ( $masker ) {
+				$value = $masker->mask( $value );
+			}
+			return rest_ensure_response( array(
+				'option_name'  => $option_name,
+				'option_value' => $value,
+			) );
+		} else {
+			if ( $option_value === null ) {
+				return new WP_Error( 'missing_value', 'option_value is required when action is set.', array( 'status' => 400 ) );
+			}
+			// Don't allow writing back masked values!
+			if ( is_string( $option_value ) && strpos( $option_value, '********' ) !== false ) {
+				return new WP_Error( 'masked_value', 'Refusing to save an option containing a masked string.', array( 'status' => 403 ) );
+			}
+			if ( is_array( $option_value ) && strpos( wp_json_encode( $option_value ), '********' ) !== false ) {
+				return new WP_Error( 'masked_value', 'Refusing to save an option array containing a masked string.', array( 'status' => 403 ) );
+			}
+
+			update_option( $option_name, $option_value );
+			return rest_ensure_response( array(
+				'success'     => true,
+				'option_name' => $option_name,
+				'message'     => 'Option updated successfully.',
+			) );
+		}
+	}
+
+	/**
+	 * Advanced Tool: Evaluate PHP Sandbox
+	 */
+	public function evaluate_php_sandbox_callback( WP_REST_Request $request ) {
+		$code = $request->get_param( 'code' );
+		if ( empty( $code ) ) {
+			return new WP_Error( 'missing_code', 'PHP code is required.', array( 'status' => 400 ) );
+		}
+
+		$code = preg_replace( '/^<\?php\s*/', '', $code );
+		$code = preg_replace( '/\?>$/', '', $code );
+
+		if ( ! function_exists( 'wp_tempnam' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+		}
+		
+		$temp_file = wp_tempnam( 'wp-ai-sandbox-' );
+		if ( ! $temp_file ) {
+			return new WP_Error( 'temp_error', 'Could not create temporary sandbox file.', array( 'status' => 500 ) );
+		}
+
+		$sandbox_script = "<?php\n";
+		$sandbox_script .= "define( 'WP_USE_THEMES', false );\n";
+		$sandbox_script .= "require_once '" . addslashes( ABSPATH ) . "wp-load.php';\n";
+		$sandbox_script .= "// AI CODE START\n";
+		$sandbox_script .= "try { \n" . $code . "\n} catch (Throwable \$e) { echo 'Sandbox Exception: ' . \$e->getMessage(); }\n";
+
+		file_put_contents( $temp_file, $sandbox_script );
+
+		$php_bin = defined( 'PHP_BINARY' ) && PHP_BINARY ? PHP_BINARY : 'php';
+		
+		$timeout_cmd = '';
+		if ( shell_exec( 'which timeout' ) ) {
+			$timeout_cmd = 'timeout 10 ';
+		}
+		
+		$command = $timeout_cmd . escapeshellarg( $php_bin ) . ' ' . escapeshellarg( $temp_file ) . ' 2>&1';
+		$output = shell_exec( $command );
+		
+		@unlink( $temp_file );
+
+		if ( class_exists( 'WP_AI_Context_Secret_Masker' ) ) {
+			$masker = new WP_AI_Context_Secret_Masker();
+			$output = $masker->mask_string( $output );
+		}
+
+		return rest_ensure_response( array(
+			'success' => true,
+			'output'  => $output,
+		) );
+	}
+	/**
+	 * Advanced Tool: Inspect Template Hierarchy
+	 */
+	public function inspect_template_hierarchy_callback( WP_REST_Request $request ) {
+		$url_path = $request->get_param( 'url_path' ); // e.g. /category/news/
+		if ( empty( $url_path ) ) {
+			return new WP_Error( 'missing_path', 'url_path is required.', array( 'status' => 400 ) );
+		}
+
+		global $wp, $wp_query;
+		$original_wp = clone $wp;
+		$original_wp_query = clone $wp_query;
+
+		$wp->parse_request( ltrim( $url_path, '/' ) );
+		$wp->query_posts();
+		
+		$template = '';
+		if ( is_404() && $template = get_404_template() ) {}
+		elseif ( is_search() && $template = get_search_template() ) {}
+		elseif ( is_front_page() && $template = get_front_page_template() ) {}
+		elseif ( is_home() && $template = get_home_template() ) {}
+		elseif ( is_privacy_policy() && $template = get_privacy_policy_template() ) {}
+		elseif ( is_post_type_archive() && $template = get_post_type_archive_template() ) {}
+		elseif ( is_tax() && $template = get_taxonomy_template() ) {}
+		elseif ( is_attachment() && $template = get_attachment_template() ) {}
+		elseif ( is_single() && $template = get_single_template() ) {}
+		elseif ( is_page() && $template = get_page_template() ) {}
+		elseif ( is_singular() && $template = get_singular_template() ) {}
+		elseif ( is_category() && $template = get_category_template() ) {}
+		elseif ( is_tag() && $template = get_tag_template() ) {}
+		elseif ( is_author() && $template = get_author_template() ) {}
+		elseif ( is_date() && $template = get_date_template() ) {}
+		elseif ( is_archive() && $template = get_archive_template() ) {}
+		else {
+			$template = get_index_template();
+		}
+
+		$wp = $original_wp;
+		$wp_query = $original_wp_query;
+		wp_reset_postdata();
+
+		if ( ! empty( $template ) ) {
+			$template = str_replace( ABSPATH, '', $template );
+		} else {
+			$template = 'Unknown Template';
+		}
+
+		return rest_ensure_response( array(
+			'url_path' => $url_path,
+			'template' => $template,
+		) );
+	}
+
+	/**
+	 * Advanced Tool: Manage WP Cron
+	 */
+	public function manage_wp_cron_callback( WP_REST_Request $request ) {
+		$action = $request->get_param( 'action' ); 
+		$hook   = $request->get_param( 'hook' );
+
+		if ( empty( $action ) || ! in_array( $action, array( 'list', 'run' ), true ) ) {
+			return new WP_Error( 'invalid_params', 'Valid action (list/run) is required.', array( 'status' => 400 ) );
+		}
+
+		if ( $action === 'list' ) {
+			$cron = _get_cron_array();
+			$events = array();
+			if ( is_array( $cron ) ) {
+				foreach ( $cron as $timestamp => $cronhooks ) {
+					foreach ( (array) $cronhooks as $hookname => $keys ) {
+						foreach ( (array) $keys as $k => $v ) {
+							$events[] = array(
+								'hook'      => $hookname,
+								'timestamp' => $timestamp,
+								'date_utc'  => gmdate( 'Y-m-d H:i:s', $timestamp ),
+								'schedule'  => isset($v['schedule']) ? $v['schedule'] : 'single',
+							);
+						}
+					}
+				}
+			}
+			return rest_ensure_response( array(
+				'events' => $events,
+			) );
+		} else {
+			if ( empty( $hook ) ) {
+				return new WP_Error( 'missing_hook', 'Hook name is required to run a cron event.', array( 'status' => 400 ) );
+			}
+			do_action( $hook );
+			return rest_ensure_response( array(
+				'success' => true,
+				'hook'    => $hook,
+				'message' => 'Cron event triggered successfully.',
+			) );
+		}
+	}
+
+	/**
+	 * Advanced Tool: Generate Magic Login
+	 */
+	public function generate_magic_login_callback( WP_REST_Request $request ) {
+		$user_id = $request->get_param( 'user_id' );
+		if ( empty( $user_id ) ) {
+			return new WP_Error( 'missing_user_id', 'user_id is required.', array( 'status' => 400 ) );
+		}
+		
+		$user = get_userdata( $user_id );
+		if ( ! $user ) {
+			return new WP_Error( 'invalid_user', 'User not found.', array( 'status' => 404 ) );
+		}
+
+		$token = wp_generate_password( 32, false );
+		$hashed = wp_hash_password( $token );
+		
+		set_transient( 'wp_ai_magic_login_' . $user_id, $hashed, 15 * MINUTE_IN_SECONDS );
+
+		$login_url = rest_url( "wp-ai-context/v1/magic-login-consume?user_id={$user_id}&token={$token}" );
+
+		return rest_ensure_response( array(
+			'success'   => true,
+			'user_id'   => $user_id,
+			'login_url' => $login_url,
+			'expires'   => '15 minutes',
+		) );
+	}
+	
+	/**
+	 * Helper: Consume Magic Login
+	 */
+	public function magic_login_consume_callback( WP_REST_Request $request ) {
+		$user_id = $request->get_param( 'user_id' );
+		$token   = $request->get_param( 'token' );
+		
+		$hashed = get_transient( 'wp_ai_magic_login_' . $user_id );
+		if ( ! $hashed || ! wp_check_password( $token, $hashed ) ) {
+			wp_die( 'Invalid or expired magic login link.' );
+		}
+		
+		delete_transient( 'wp_ai_magic_login_' . $user_id );
+		
+		wp_set_auth_cookie( $user_id, true, is_ssl() );
+		wp_safe_redirect( admin_url() );
+		exit;
+	}
+
+	/**
+	 * Advanced Tool: Sideload Media
+	 */
+	public function sideload_media_callback( WP_REST_Request $request ) {
+		$url = $request->get_param( 'url' );
+		if ( empty( $url ) ) {
+			return new WP_Error( 'missing_url', 'Remote image URL is required.', array( 'status' => 400 ) );
+		}
+
+		$url = esc_url_raw( $url );
+		if ( ! wp_http_validate_url( $url ) ) {
+			return new WP_Error( 'rest_invalid_param', __( 'Invalid media URL.', 'wp-ai-context' ), array( 'status' => 400 ) );
+		}
+
+		require_once( ABSPATH . 'wp-admin/includes/media.php' );
+		require_once( ABSPATH . 'wp-admin/includes/file.php' );
+		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+		$id = media_sideload_image( $url, 0, null, 'id' );
+
+		if ( is_wp_error( $id ) ) {
+			return $id;
+		}
+
+		$attachment_url = wp_get_attachment_url( $id );
+
+		return rest_ensure_response( array(
+			'success'        => true,
+			'attachment_id'  => $id,
+			'attachment_url' => $attachment_url,
+		) );
+	}
+	/**
+	 * God Mode: Simulate WP Query
+	 */
+	public function simulate_wp_query_callback( WP_REST_Request $request ) {
+		$args_json = $request->get_param( 'query_args' );
+		if ( empty( $args_json ) ) {
+			return new WP_Error( 'missing_args', 'query_args JSON is required.', array( 'status' => 400 ) );
+		}
+
+		$args = json_decode( $args_json, true );
+		if ( ! is_array( $args ) ) {
+			return new WP_Error( 'invalid_json', 'query_args must be a valid JSON object.', array( 'status' => 400 ) );
+		}
+
+		$query = new WP_Query( $args );
+		
+		$posts = array();
+		if ( $query->have_posts() ) {
+			foreach ( $query->posts as $p ) {
+				$post_data = (array) $p;
+				$meta = get_post_meta( $p->ID );
+				$post_data['meta'] = $meta;
+				$posts[] = $post_data;
+			}
+		}
+
+		return rest_ensure_response( array(
+			'found_posts'   => $query->found_posts,
+			'max_num_pages' => $query->max_num_pages,
+			'posts'         => $posts,
+		) );
+	}
+
+	/**
+	 * God Mode: Manage Rewrite Rules
+	 */
+	public function manage_rewrite_rules_callback( WP_REST_Request $request ) {
+		$action = $request->get_param( 'action' ); // inspect or flush
+		
+		if ( empty( $action ) || ! in_array( $action, array( 'inspect', 'flush' ), true ) ) {
+			return new WP_Error( 'invalid_params', 'Valid action (inspect/flush) is required.', array( 'status' => 400 ) );
+		}
+
+		global $wp_rewrite;
+
+		if ( $action === 'flush' ) {
+			flush_rewrite_rules( true );
+			return rest_ensure_response( array(
+				'success' => true,
+				'message' => 'Rewrite rules flushed successfully.',
+			) );
+		}
+
+		// inspect
+		$rules = $wp_rewrite->wp_rewrite_rules();
+		return rest_ensure_response( array(
+			'success' => true,
+			'rules'   => $rules ? $rules : array(),
+		) );
+	}
+
+	/**
+	 * God Mode: Get Schema Registry
+	 */
+	public function get_schema_registry_callback( WP_REST_Request $request ) {
+		$post_types = get_post_types( array(), 'objects' );
+		$taxonomies = get_taxonomies( array(), 'objects' );
+
+		$pt_data = array();
+		foreach ( $post_types as $pt ) {
+			$pt_data[ $pt->name ] = array(
+				'name'         => $pt->name,
+				'public'       => $pt->public,
+				'hierarchical' => $pt->hierarchical,
+				'has_archive'  => $pt->has_archive,
+				'rewrite'      => $pt->rewrite,
+				'taxonomies'   => $pt->taxonomies,
+			);
+		}
+
+		$tax_data = array();
+		foreach ( $taxonomies as $tax ) {
+			$tax_data[ $tax->name ] = array(
+				'name'         => $tax->name,
+				'public'       => $tax->public,
+				'hierarchical' => $tax->hierarchical,
+				'rewrite'      => $tax->rewrite,
+				'object_type'  => $tax->object_type,
+			);
+		}
+
+		return rest_ensure_response( array(
+			'post_types' => $pt_data,
+			'taxonomies' => $tax_data,
+		) );
+	}
+
+	/**
+	 * God Mode: Manage Post (CRUD)
+	 */
+	public function manage_post_callback( WP_REST_Request $request ) {
+		$action         = $request->get_param( 'action' ); // create, update, delete
+		$post_data_json = $request->get_param( 'post_data' );
+
+		if ( empty( $action ) || ! in_array( $action, array( 'create', 'update', 'delete' ), true ) ) {
+			return new WP_Error( 'invalid_params', 'Valid action (create/update/delete) is required.', array( 'status' => 400 ) );
+		}
+
+		if ( $action === 'delete' ) {
+			$post_id = $request->get_param( 'post_id' );
+			if ( empty( $post_id ) ) {
+				return new WP_Error( 'missing_id', 'post_id is required for delete.', array( 'status' => 400 ) );
+			}
+			$result = wp_trash_post( $post_id );
+			if ( ! $result ) {
+				return new WP_Error( 'delete_failed', 'Failed to trash post.', array( 'status' => 500 ) );
+			}
+			return rest_ensure_response( array( 'success' => true, 'message' => 'Post trashed.' ) );
+		}
+
+		if ( empty( $post_data_json ) ) {
+			return new WP_Error( 'missing_data', 'post_data JSON is required for create/update.', array( 'status' => 400 ) );
+		}
+
+		$post_data = json_decode( $post_data_json, true );
+		if ( ! is_array( $post_data ) ) {
+			return new WP_Error( 'invalid_json', 'post_data must be a valid JSON object.', array( 'status' => 400 ) );
+		}
+
+		if ( $action === 'update' ) {
+			if ( empty( $post_data['ID'] ) ) {
+				return new WP_Error( 'missing_id', 'post_data must contain an ID for update.', array( 'status' => 400 ) );
+			}
+			$post_id = wp_update_post( $post_data, true );
+		} else { // create
+			$post_id = wp_insert_post( $post_data, true );
+		}
+
+		if ( is_wp_error( $post_id ) ) {
+			return $post_id;
+		}
+
+		return rest_ensure_response( array(
+			'success' => true,
+			'post_id' => $post_id,
+			'action'  => $action,
+		) );
+	}
+
+	/**
+	 * God Mode: Tail Debug Log
+	 */
+	public function tail_debug_log_callback( WP_REST_Request $request ) {
+		$lines = $request->get_param( 'lines' ) ? intval( $request->get_param( 'lines' ) ) : 50;
+		if ( $lines > 1000 ) $lines = 1000;
+
+		$log_file = defined( 'WP_DEBUG_LOG' ) && is_string( WP_DEBUG_LOG ) ? WP_DEBUG_LOG : WP_CONTENT_DIR . '/debug.log';
+		
+		if ( ! file_exists( $log_file ) ) {
+			return rest_ensure_response( array(
+				'success' => true,
+				'log'     => 'No debug.log file found at ' . str_replace( ABSPATH, '', $log_file ),
+			) );
+		}
+
+		$output = '';
+		if ( function_exists( 'shell_exec' ) && ! in_array( 'shell_exec', array_map( 'trim', explode( ',', ini_get( 'disable_functions' ) ) ) ) ) {
+			$output = shell_exec( 'tail -n ' . $lines . ' ' . escapeshellarg( $log_file ) );
+		} else {
+			$file = file( $log_file );
+			$output = implode( "", array_slice( $file, -$lines ) );
+		}
+
+		if ( class_exists( 'WP_AI_Context_Secret_Masker' ) ) {
+			$masker = new WP_AI_Context_Secret_Masker();
+			$output = $masker->mask_string( $output );
+		}
+
+		return rest_ensure_response( array(
+			'success' => true,
+			'log'     => $output,
+		) );
+	}
+	/**
+	 * Elite Tool: Test WP Mail
+	 */
+	public function test_wp_mail_callback( WP_REST_Request $request ) {
+		$to = $request->get_param( 'to' ) ? $request->get_param( 'to' ) : get_option('admin_email');
+		$subject = 'WP AI Context - SMTP Test';
+		$message = 'This is a test email triggered by the AI agent to verify SMTP functionality.';
+
+		global $phpmailer;
+		
+		$smtp_debug = '';
+		$error_msg = '';
+
+		add_action( 'phpmailer_init', function( $mailer ) use ( &$smtp_debug ) {
+			$mailer->SMTPDebug = 2;
+			$mailer->Debugoutput = function( $str, $level ) use ( &$smtp_debug ) {
+				$smtp_debug .= $str . "\n";
+			};
+		} );
+
+		try {
+			$result = wp_mail( $to, $subject, $message );
+			if ( ! $result && isset( $phpmailer->ErrorInfo ) ) {
+				$error_msg = $phpmailer->ErrorInfo;
+			}
+		} catch ( Exception $e ) {
+			$result = false;
+			$error_msg = $e->getMessage();
+		}
+
+		return rest_ensure_response( array(
+			'success'    => $result,
+			'to'         => $to,
+			'error'      => $error_msg,
+			'smtp_debug' => $smtp_debug,
+		) );
+	}
+
+	/**
+	 * Elite Tool: Get Enqueued Assets
+	 */
+	public function get_enqueued_assets_callback( WP_REST_Request $request ) {
+		$url_path = $request->get_param( 'url_path' ); // e.g. /
+		if ( empty( $url_path ) ) {
+			return new WP_Error( 'missing_path', 'url_path is required.', array( 'status' => 400 ) );
+		}
+
+		global $wp, $wp_query, $wp_scripts, $wp_styles;
+		
+		$original_wp = clone $wp;
+		$original_wp_query = clone $wp_query;
+
+		$wp->parse_request( ltrim( $url_path, '/' ) );
+		$wp->query_posts();
+		
+		ob_start();
+		do_action( 'wp_enqueue_scripts' );
+		wp_head();
+		wp_footer();
+		ob_end_clean();
+
+		$scripts = array();
+		if ( is_a( $wp_scripts, 'WP_Scripts' ) ) {
+			foreach ( $wp_scripts->queue as $handle ) {
+				$scripts[] = array(
+					'handle' => $handle,
+					'src'    => isset( $wp_scripts->registered[$handle] ) ? $wp_scripts->registered[$handle]->src : '',
+					'deps'   => isset( $wp_scripts->registered[$handle] ) ? $wp_scripts->registered[$handle]->deps : array(),
+					'ver'    => isset( $wp_scripts->registered[$handle] ) ? $wp_scripts->registered[$handle]->ver : '',
+				);
+			}
+		}
+
+		$styles = array();
+		if ( is_a( $wp_styles, 'WP_Styles' ) ) {
+			foreach ( $wp_styles->queue as $handle ) {
+				$styles[] = array(
+					'handle' => $handle,
+					'src'    => isset( $wp_styles->registered[$handle] ) ? $wp_styles->registered[$handle]->src : '',
+					'deps'   => isset( $wp_styles->registered[$handle] ) ? $wp_styles->registered[$handle]->deps : array(),
+					'ver'    => isset( $wp_styles->registered[$handle] ) ? $wp_styles->registered[$handle]->ver : '',
+				);
+			}
+		}
+
+		$wp = $original_wp;
+		$wp_query = $original_wp_query;
+		wp_reset_postdata();
+
+		return rest_ensure_response( array(
+			'url_path' => $url_path,
+			'scripts'  => $scripts,
+			'styles'   => $styles,
+		) );
+	}
+
+	/**
+	 * Elite Tool: Check Server Environment
+	 */
+	public function check_server_env_callback( WP_REST_Request $request ) {
+		$env = array(
+			'php_version' => phpversion(),
+			'memory_limit' => ini_get('memory_limit'),
+			'max_execution_time' => ini_get('max_execution_time'),
+			'upload_max_filesize' => ini_get('upload_max_filesize'),
+			'post_max_size' => ini_get('post_max_size'),
+			'is_writable_abspath' => is_writable( ABSPATH ),
+			'is_writable_wp_content' => is_writable( WP_CONTENT_DIR ),
+			'is_writable_uploads' => function_exists('wp_upload_dir') ? wp_is_writable( wp_upload_dir()['basedir'] ) : false,
+			'disk_free_space_mb' => function_exists('disk_free_space') ? round( disk_free_space( ABSPATH ) / 1024 / 1024, 2 ) : 'unknown',
+			'loaded_extensions' => get_loaded_extensions(),
+			'disable_functions' => ini_get('disable_functions'),
+		);
+
+		return rest_ensure_response( array(
+			'server_environment' => $env,
+		) );
+	}
+
+	/**
+	 * Elite Tool: Manage Users and Roles
+	 */
+	public function manage_users_roles_callback( WP_REST_Request $request ) {
+		$action = $request->get_param( 'action' ); 
+
+		if ( empty( $action ) || ! in_array( $action, array( 'list_roles', 'list_users' ), true ) ) {
+			return new WP_Error( 'invalid_params', 'Valid action (list_roles/list_users) is required.', array( 'status' => 400 ) );
+		}
+
+		if ( $action === 'list_roles' ) {
+			global $wp_roles;
+			return rest_ensure_response( array(
+				'roles' => $wp_roles->roles,
+			) );
+		} else { 
+			$users = get_users( array( 'fields' => array( 'ID', 'user_login', 'user_email', 'display_name' ) ) );
+			$masker = null;
+			if ( class_exists( 'WP_AI_Context_Secret_Masker' ) ) {
+				$masker = new WP_AI_Context_Secret_Masker();
+			}
+			$safe_users = array();
+			foreach ( $users as $u ) {
+				$u_arr = (array) $u;
+				$u_arr['roles'] = get_userdata( $u->ID )->roles;
+				if ( $masker ) {
+					$u_arr['user_email'] = $masker->mask_string( $u_arr['user_email'] );
+				}
+				$safe_users[] = $u_arr;
+			}
+			return rest_ensure_response( array(
+				'users' => $safe_users,
+			) );
+		}
+	}
+
+	/**
+	 * Elite Tool: Auto Plugin Bisect
+	 */
+	public function auto_plugin_bisect_callback( WP_REST_Request $request ) {
+		$url_path = $request->get_param( 'url_path' );
+		$expected_string = $request->get_param( 'expected_string' );
+		
+		if ( empty( $url_path ) || empty( $expected_string ) ) {
+			return new WP_Error( 'missing_params', 'url_path and expected_string are required.', array( 'status' => 400 ) );
+		}
+
+		$bash_script = "# Run this in /execute-wp-cli or terminal to auto-bisect:\n";
+		$bash_script .= "URL=\"" . esc_url_raw( home_url( $url_path ) ) . "\"\n";
+		$bash_script .= "SEARCH=\"" . escapeshellcmd( $expected_string ) . "\"\n";
+		$bash_script .= "wp plugin list --status=active --field=name > active_plugins.txt\n";
+		$bash_script .= "echo 'Bisect script generated. For safety, manual bisection via manage-plugin-state is recommended.'";
+
+		$active_plugins = get_option('active_plugins');
+
+		return rest_ensure_response( array(
+			'message' => 'To avoid API timeouts, full auto-bisect is delegated. Use the list of active plugins below and /manage-plugin-state to binary-search.',
+			'active_plugins' => $active_plugins,
+			'bash_snippet' => $bash_script,
+		) );
+	}
+	/**
+	 * Architectural Tool: Inspect REST API
+	 */
+	public function inspect_rest_api_callback( WP_REST_Request $request ) {
+		$server = rest_get_server();
+		$routes = $server->get_routes();
+		
+		$clean_routes = array();
+		foreach ( $routes as $route => $handlers ) {
+			$methods = array();
+			foreach ( $handlers as $handler ) {
+				if ( isset( $handler['methods'] ) ) {
+					$methods = array_merge( $methods, array_keys( $handler['methods'] ) );
+				}
+			}
+			$clean_routes[$route] = array_unique( $methods );
+		}
+
+		return rest_ensure_response( array(
+			'routes' => $clean_routes,
+		) );
+	}
+
+	/**
+	 * Architectural Tool: Manage Transients
+	 */
+	public function manage_transients_callback( WP_REST_Request $request ) {
+		$action = $request->get_param( 'action' ); // get, set, delete
+		$name   = $request->get_param( 'name' );
+		
+		if ( empty( $action ) || ! in_array( $action, array( 'get', 'set', 'delete' ), true ) ) {
+			return new WP_Error( 'invalid_params', 'Valid action (get/set/delete) is required.', array( 'status' => 400 ) );
+		}
+		if ( empty( $name ) ) {
+			return new WP_Error( 'missing_name', 'Transient name is required.', array( 'status' => 400 ) );
+		}
+
+		if ( $action === 'get' ) {
+			$val = get_transient( $name );
+			return rest_ensure_response( array( 'name' => $name, 'value' => $val ) );
+		} elseif ( $action === 'delete' ) {
+			$res = delete_transient( $name );
+			return rest_ensure_response( array( 'name' => $name, 'deleted' => $res ) );
+		} else { // set
+			$value = $request->get_param( 'value' );
+			$expiration = (int) $request->get_param( 'expiration' );
+			$res = set_transient( $name, $value, $expiration );
+			return rest_ensure_response( array( 'name' => $name, 'set' => $res ) );
+		}
+	}
+
+	/**
+	 * Architectural Tool: Inspect Theme Widgets
+	 */
+	public function inspect_theme_widgets_callback( WP_REST_Request $request ) {
+		global $wp_registered_sidebars, $wp_registered_widgets;
+		
+		$sidebars_widgets = wp_get_sidebars_widgets();
+		$layout = array();
+
+		foreach ( $sidebars_widgets as $sidebar_id => $widget_ids ) {
+			if ( 'wp_inactive_widgets' === $sidebar_id ) continue;
+			
+			$sidebar_name = isset( $wp_registered_sidebars[$sidebar_id] ) ? $wp_registered_sidebars[$sidebar_id]['name'] : $sidebar_id;
+			$widgets = array();
+			
+			if ( is_array( $widget_ids ) ) {
+				foreach ( $widget_ids as $widget_id ) {
+					if ( isset( $wp_registered_widgets[$widget_id] ) ) {
+						$widgets[] = array(
+							'id' => $widget_id,
+							'name' => $wp_registered_widgets[$widget_id]['name'],
+							'classname' => $wp_registered_widgets[$widget_id]['classname'],
+						);
+					}
+				}
+			}
+			
+			$layout[$sidebar_id] = array(
+				'name' => $sidebar_name,
+				'widgets' => $widgets,
+			);
+		}
+
+		return rest_ensure_response( array(
+			'sidebars' => $layout,
+		) );
+	}
+
+	/**
+	 * Architectural Tool: Verify Core Checksums
+	 */
+	public function verify_core_checksums_callback( WP_REST_Request $request ) {
+		require_once ABSPATH . 'wp-admin/includes/update.php';
+		
+		$wp_version = get_bloginfo( 'version' );
+		$locale = get_locale();
+		
+		$checksums = get_core_checksums( $wp_version, $locale );
+		if ( ! $checksums ) {
+			return new WP_Error( 'no_checksums', 'Could not retrieve checksums from WordPress.org', array( 'status' => 500 ) );
+		}
+
+		$modified = array();
+		$missing = array();
+
+		foreach ( $checksums as $file => $checksum ) {
+			if ( strpos( $file, 'wp-content' ) === 0 ) {
+				continue;
+			}
+			$absolute_path = ABSPATH . $file;
+			if ( ! file_exists( $absolute_path ) ) {
+				$missing[] = $file;
+				continue;
+			}
+			$md5 = md5_file( $absolute_path );
+			if ( $md5 !== $checksum ) {
+				$modified[] = $file;
+			}
+		}
+
+		return rest_ensure_response( array(
+			'version'  => $wp_version,
+			'locale'   => $locale,
+			'status'   => ( empty($modified) && empty($missing) ) ? 'secure' : 'compromised',
+			'modified' => $modified,
+			'missing'  => $missing,
+		) );
+	}
+
+	/**
+	 * Architectural Tool: Inspect Nav Menus
+	 */
+	public function inspect_nav_menus_callback( WP_REST_Request $request ) {
+		$locations = get_nav_menu_locations();
+		$registered = get_registered_nav_menus();
+		
+		$menu_map = array();
+		
+		foreach ( $registered as $location => $description ) {
+			$menu_id = isset( $locations[$location] ) ? $locations[$location] : 0;
+			$menu_items = array();
+			
+			if ( $menu_id > 0 ) {
+				$items = wp_get_nav_menu_items( $menu_id );
+				if ( $items ) {
+					foreach ( $items as $item ) {
+						$menu_items[] = array(
+							'ID' => $item->ID,
+							'title' => $item->title,
+							'url' => $item->url,
+							'parent' => $item->menu_item_parent,
+							'type' => $item->type,
+							'object' => $item->object,
+						);
+					}
+				}
+			}
+			
+			$menu_map[$location] = array(
+				'description' => $description,
+				'menu_id'     => $menu_id,
+				'items'       => $menu_items,
+			);
+		}
+
+		return rest_ensure_response( array(
+			'locations' => $menu_map,
+		) );
+	}
+	/**
+	 * Security Tool: Audit Admin Accounts
+	 */
+	public function audit_admin_accounts_callback( WP_REST_Request $request ) {
+		$admins = get_users( array( 'role' => 'administrator' ) );
+		$masker = null;
+		if ( class_exists( 'WP_AI_Context_Secret_Masker' ) ) {
+			$masker = new WP_AI_Context_Secret_Masker();
+		}
+
+		$results = array();
+		foreach ( $admins as $admin ) {
+			$email = $masker ? $masker->mask_string( $admin->user_email ) : $admin->user_email;
+			$results[] = array(
+				'ID'             => $admin->ID,
+				'user_login'     => $admin->user_login,
+				'user_email'     => $email,
+				'registered'     => $admin->user_registered,
+				'is_super_admin' => is_multisite() && is_super_admin( $admin->ID ),
+			);
+		}
+
+		return rest_ensure_response( array(
+			'administrators' => $results,
+		) );
+	}
+
+	/**
+	 * Security Tool: Scan Suspicious Code
+	 */
+	public function scan_suspicious_code_callback( WP_REST_Request $request ) {
+		$directories = array( WP_PLUGIN_DIR, get_theme_root() );
+		$patterns = array(
+			'eval\s*\(\s*base64_decode',
+			'gzinflate\s*\(\s*str_rot13',
+			'wp_insert_user\s*\(', 
+		);
+
+		$results = array();
+
+		if ( function_exists( 'shell_exec' ) && ! in_array( 'shell_exec', array_map( 'trim', explode( ',', ini_get( 'disable_functions' ) ) ) ) ) {
+			foreach ( $directories as $dir ) {
+				if ( ! is_dir( $dir ) ) continue;
+				foreach ( $patterns as $pattern ) {
+					$cmd = 'grep -riE ' . escapeshellarg( $pattern ) . ' ' . escapeshellarg( $dir ) . ' | head -n 50';
+					$output = shell_exec( $cmd );
+					if ( trim( $output ) ) {
+						$results[] = array(
+							'pattern'   => $pattern,
+							'directory' => str_replace( ABSPATH, '', $dir ),
+							'matches'   => explode( "\n", trim( $output ) ),
+						);
+					}
+				}
+			}
+			return rest_ensure_response( array(
+				'status'   => 'scanned',
+				'findings' => $results,
+			) );
+		} else {
+			return rest_ensure_response( array(
+				'status'  => 'shell_exec_disabled',
+				'message' => 'shell_exec is disabled. Run the following grep command via execute-wp-cli to scan manually:',
+				'command' => 'grep -riE "eval\s*\(\s*base64_decode|gzinflate\s*\(\s*str_rot13" wp-content/plugins wp-content/themes',
+			) );
+		}
+	}
+
+	/**
+	 * Security Tool: Audit File Permissions
+	 */
+	public function audit_file_permissions_callback( WP_REST_Request $request ) {
+		$files_to_check = array(
+			ABSPATH . 'wp-config.php',
+			ABSPATH . '.htaccess',
+			ABSPATH . 'index.php',
+			WP_CONTENT_DIR,
+			WP_PLUGIN_DIR,
+			function_exists('wp_upload_dir') ? wp_upload_dir()['basedir'] : WP_CONTENT_DIR . '/uploads',
+		);
+
+		$results = array();
+		foreach ( $files_to_check as $file ) {
+			if ( file_exists( $file ) ) {
+				$perms = substr( sprintf( '%o', fileperms( $file ) ), -4 );
+				$is_dir = is_dir( $file );
+				
+				$grade = 'safe';
+				if ( $perms === '0777' ) {
+					$grade = 'critical';
+				} elseif ( $perms === '0666' && ! $is_dir ) {
+					$grade = 'warning';
+				}
+
+				$results[] = array(
+					'path'        => str_replace( ABSPATH, '', $file ),
+					'type'        => $is_dir ? 'directory' : 'file',
+					'permissions' => $perms,
+					'grade'       => $grade,
+				);
+			} else {
+				$results[] = array(
+					'path'   => str_replace( ABSPATH, '', $file ),
+					'status' => 'not_found',
+				);
+			}
+		}
+
+		return rest_ensure_response( array(
+			'permissions' => $results,
+		) );
+	}
+
+	/**
+	 * Security Tool: Inspect Security Flags
+	 */
+	public function inspect_security_flags_callback( WP_REST_Request $request ) {
+		$flags = array(
+			'DISALLOW_FILE_EDIT'       => defined( 'DISALLOW_FILE_EDIT' ) ? DISALLOW_FILE_EDIT : false,
+			'DISALLOW_FILE_MODS'       => defined( 'DISALLOW_FILE_MODS' ) ? DISALLOW_FILE_MODS : false,
+			'FORCE_SSL_ADMIN'          => defined( 'FORCE_SSL_ADMIN' ) ? FORCE_SSL_ADMIN : false,
+			'WP_DEBUG'                 => defined( 'WP_DEBUG' ) ? WP_DEBUG : false,
+			'WP_DEBUG_DISPLAY'         => defined( 'WP_DEBUG_DISPLAY' ) ? WP_DEBUG_DISPLAY : false,
+			'WP_DEBUG_LOG'             => defined( 'WP_DEBUG_LOG' ) ? WP_DEBUG_LOG : false,
+			'DISALLOW_UNFILTERED_HTML' => defined( 'DISALLOW_UNFILTERED_HTML' ) ? DISALLOW_UNFILTERED_HTML : false,
+			'WP_AUTO_UPDATE_CORE'      => defined( 'WP_AUTO_UPDATE_CORE' ) ? WP_AUTO_UPDATE_CORE : false,
+		);
+
+		return rest_ensure_response( array(
+			'security_constants' => $flags,
+		) );
+	}
+
+	/**
+	 * Security Tool: Get Dependency Manifest
+	 */
+	public function get_dependency_manifest_callback( WP_REST_Request $request ) {
+		if ( ! function_exists( 'get_plugins' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		
+		$all_plugins = get_plugins();
+		$active_plugins = get_option( 'active_plugins', array() );
+
+		$plugins_manifest = array();
+		foreach ( $all_plugins as $plugin_file => $plugin_data ) {
+			$plugins_manifest[] = array(
+				'name'       => $plugin_data['Name'],
+				'slug'       => dirname( $plugin_file ),
+				'version'    => $plugin_data['Version'],
+				'author'     => $plugin_data['Author'],
+				'author_uri' => $plugin_data['AuthorURI'],
+				'is_active'  => in_array( $plugin_file, $active_plugins, true ),
+			);
+		}
+
+		$themes = wp_get_themes();
+		$active_theme = get_option( 'stylesheet' );
+		
+		$themes_manifest = array();
+		foreach ( $themes as $slug => $theme ) {
+			$themes_manifest[] = array(
+				'name'      => $theme->get('Name'),
+				'slug'      => $slug,
+				'version'   => $theme->get('Version'),
+				'author'    => $theme->get('Author'),
+				'is_active' => ( $slug === $active_theme ),
+			);
+		}
+
+		return rest_ensure_response( array(
+			'wordpress_version' => get_bloginfo( 'version' ),
+			'plugins'           => $plugins_manifest,
+			'themes'            => $themes_manifest,
+		) );
+	}
+	/**
+	 * Performance Tool: Analyze DB Tables
+	 */
+	public function analyze_db_tables_callback( WP_REST_Request $request ) {
+		global $wpdb;
+		$tables = $wpdb->get_results( 'SHOW TABLE STATUS', ARRAY_A );
+		
+		$analysis = array();
+		$total_size = 0;
+		$total_overhead = 0;
+
+		foreach ( $tables as $table ) {
+			$size = $table['Data_length'] + $table['Index_length'];
+			$overhead = isset( $table['Data_free'] ) ? $table['Data_free'] : 0;
+			
+			$total_size += $size;
+			$total_overhead += $overhead;
+
+			$analysis[] = array(
+				'name'        => $table['Name'],
+				'engine'      => $table['Engine'],
+				'rows'        => $table['Rows'],
+				'size_mb'     => round( $size / 1024 / 1024, 2 ),
+				'overhead_mb' => round( $overhead / 1024 / 1024, 2 ),
+			);
+		}
+
+		usort($analysis, function($a, $b) {
+			return $b['size_mb'] <=> $a['size_mb'];
+		});
+
+		return rest_ensure_response( array(
+			'total_size_mb'     => round( $total_size / 1024 / 1024, 2 ),
+			'total_overhead_mb' => round( $total_overhead / 1024 / 1024, 2 ),
+			'tables'            => $analysis,
+		) );
+	}
+
+	/**
+	 * Performance Tool: Optimize DB Tables
+	 */
+	public function optimize_db_tables_callback( WP_REST_Request $request ) {
+		$table = $request->get_param( 'table' );
+		global $wpdb;
+
+		if ( empty( $table ) ) {
+			return new WP_Error( 'missing_table', 'Table name is required.', array( 'status' => 400 ) );
+		}
+
+		$existing = $wpdb->get_col( 'SHOW TABLES' );
+		if ( ! in_array( $table, $existing, true ) ) {
+			return new WP_Error( 'invalid_table', 'Table does not exist.', array( 'status' => 400 ) );
+		}
+
+		$optimize = $wpdb->get_results( "OPTIMIZE TABLE `$table`", ARRAY_A );
+		
+		return rest_ensure_response( array(
+			'table'  => $table,
+			'result' => $optimize,
+		) );
+	}
+
+	/**
+	 * SEO Tool: Trace Redirect Chain
+	 */
+	public function trace_redirect_chain_callback( WP_REST_Request $request ) {
+		$url = $request->get_param( 'url' );
+		if ( empty( $url ) ) {
+			$url = home_url();
+		}
+
+		$chain = array();
+		$max_redirects = 10;
+		$current_url = $url;
+
+		for ( $i = 0; $i < $max_redirects; $i++ ) {
+			$args = array(
+				'redirection' => 0,
+				'timeout'     => 5,
+			);
+			$response = wp_remote_get( $current_url, $args );
+
+			if ( is_wp_error( $response ) ) {
+				$chain[] = array( 'url' => $current_url, 'error' => $response->get_error_message() );
+				break;
+			}
+
+			$status_code = wp_remote_retrieve_response_code( $response );
+			$location    = wp_remote_retrieve_header( $response, 'location' );
+
+			$chain[] = array(
+				'url'      => $current_url,
+				'status'   => $status_code,
+				'location' => $location ? $location : null,
+			);
+
+			if ( ! in_array( $status_code, array( 301, 302, 303, 307, 308 ) ) || empty( $location ) ) {
+				break;
+			}
+
+			if ( strpos( $location, 'http' ) !== 0 ) {
+				$parsed = parse_url( $current_url );
+				$current_url = $parsed['scheme'] . '://' . $parsed['host'] . $location;
+			} else {
+				$current_url = $location;
+			}
+		}
+
+		return rest_ensure_response( array(
+			'initial_url' => $url,
+			'chain'       => $chain,
+		) );
+	}
+
+	/**
+	 * SEO Tool: Inspect SEO Metadata
+	 */
+	public function inspect_seo_metadata_callback( WP_REST_Request $request ) {
+		$url_path = $request->get_param( 'url_path' ); // e.g. /about/
+		if ( empty( $url_path ) ) {
+			return new WP_Error( 'missing_path', 'url_path is required.', array( 'status' => 400 ) );
+		}
+
+		$full_url = home_url( ltrim( $url_path, '/' ) );
+		$response = wp_remote_get( $full_url, array( 'timeout' => 10 ) );
+
+		if ( is_wp_error( $response ) ) {
+			return new WP_Error( 'request_failed', $response->get_error_message(), array( 'status' => 500 ) );
+		}
+
+		$html = wp_remote_retrieve_body( $response );
+		$metadata = array();
+		
+		if ( preg_match( '/<title>(.*?)<\/title>/is', $html, $matches ) ) {
+			$metadata['title'] = trim( $matches[1] );
+		}
+		
+		if ( preg_match( '/<meta[^>]*name=["\']description["\'][^>]*content=["\'](.*?)["\'][^>]*>/is', $html, $matches ) ) {
+			$metadata['description'] = trim( $matches[1] );
+		}
+		
+		if ( preg_match( '/<link[^>]*rel=["\']canonical["\'][^>]*href=["\'](.*?)["\'][^>]*>/is', $html, $matches ) ) {
+			$metadata['canonical'] = trim( $matches[1] );
+		}
+
+		if ( preg_match_all( '/<meta[^>]*property=["\']og:(.*?)["\'][^>]*content=["\'](.*?)["\'][^>]*>/is', $html, $matches, PREG_SET_ORDER ) ) {
+			foreach ( $matches as $match ) {
+				$metadata['og:' . $match[1]] = trim( $match[2] );
+			}
+		}
+
+		if ( preg_match_all( '/<meta[^>]*name=["\']twitter:(.*?)["\'][^>]*content=["\'](.*?)["\'][^>]*>/is', $html, $matches, PREG_SET_ORDER ) ) {
+			foreach ( $matches as $match ) {
+				$metadata['twitter:' . $match[1]] = trim( $match[2] );
+			}
+		}
+
+		return rest_ensure_response( array(
+			'url'      => $full_url,
+			'metadata' => $metadata,
+		) );
+	}
+
+	/**
+	 * Performance Tool: Regenerate Attachment
+	 */
+	public function regenerate_attachment_callback( WP_REST_Request $request ) {
+		$attachment_id = (int) $request->get_param( 'attachment_id' );
+		if ( empty( $attachment_id ) ) {
+			return new WP_Error( 'missing_id', 'attachment_id is required.', array( 'status' => 400 ) );
+		}
+
+		if ( ! wp_attachment_is_image( $attachment_id ) ) {
+			return new WP_Error( 'not_image', 'Attachment is not an image.', array( 'status' => 400 ) );
+		}
+
+		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+		
+		$file = get_attached_file( $attachment_id );
+		if ( ! file_exists( $file ) ) {
+			return new WP_Error( 'file_missing', 'Original image file is missing from server.', array( 'status' => 404 ) );
+		}
+
+		$metadata = wp_generate_attachment_metadata( $attachment_id, $file );
+		wp_update_attachment_metadata( $attachment_id, $metadata );
+
+		return rest_ensure_response( array(
+			'success'       => true,
+			'attachment_id' => $attachment_id,
+			'metadata'      => $metadata,
+		) );
+	}
+	/**
+	 * Niche Tool: Parse Gutenberg Blocks
+	 */
+	public function parse_gutenberg_blocks_callback( WP_REST_Request $request ) {
+		$post_id = (int) $request->get_param( 'post_id' );
+		if ( empty( $post_id ) ) {
+			return new WP_Error( 'missing_post_id', 'post_id is required.', array( 'status' => 400 ) );
+		}
+
+		$post = get_post( $post_id );
+		if ( ! $post ) {
+			return new WP_Error( 'invalid_post', 'Post not found.', array( 'status' => 404 ) );
+		}
+
+		if ( ! function_exists( 'parse_blocks' ) ) {
+			return new WP_Error( 'not_supported', 'parse_blocks function is not available in this WP version.', array( 'status' => 500 ) );
+		}
+
+		$blocks = parse_blocks( $post->post_content );
+
+		return rest_ensure_response( array(
+			'post_id' => $post_id,
+			'blocks'  => $blocks,
+		) );
+	}
+
+	/**
+	 * Niche Tool: Monitor Slow Queries
+	 */
+	public function monitor_slow_queries_callback( WP_REST_Request $request ) {
+		$url_path = $request->get_param( 'url_path' );
+		if ( empty( $url_path ) ) {
+			return new WP_Error( 'missing_path', 'url_path is required.', array( 'status' => 400 ) );
+		}
+		
+		if ( function_exists( 'shell_exec' ) && ! in_array( 'shell_exec', array_map( 'trim', explode( ',', ini_get( 'disable_functions' ) ) ) ) ) {
+			$cmd = 'wp profile stage --url=' . escapeshellarg( home_url( ltrim( $url_path, '/' ) ) ) . ' --path=' . escapeshellarg( ABSPATH ) . ' --allow-root 2>&1';
+			$output = shell_exec( $cmd );
+			
+			if ( strpos( $output, 'Error: ' ) !== false || strpos( $output, 'command not found' ) !== false ) {
+				return rest_ensure_response( array(
+					'status'     => 'wp_cli_profile_missing',
+					'message'    => 'WP-CLI or the wp-cli/profile-command package is not installed. To monitor slow queries natively, install it via: wp package install wp-cli/profile-command',
+					'raw_output' => $output,
+				) );
+			}
+			
+			return rest_ensure_response( array(
+				'status'  => 'profiled',
+				'url'     => home_url( ltrim( $url_path, '/' ) ),
+				'profile' => $output,
+			) );
+		}
+
+		return new WP_Error( 'shell_exec_disabled', 'shell_exec is disabled. Cannot run query profiler.', array( 'status' => 500 ) );
+	}
+
+	/**
+	 * Niche Tool: Patch wp-config.php safely
+	 */
+	public function patch_wp_config_callback( WP_REST_Request $request ) {
+		$constant = $request->get_param( 'constant' );
+		$value    = $request->get_param( 'value' ); // string representation, e.g. "true", "'WP_DEBUG_LOG'"
+
+		if ( empty( $constant ) || ! isset( $value ) ) {
+			return new WP_Error( 'missing_params', 'constant and value are required.', array( 'status' => 400 ) );
+		}
+
+		$config_path = ABSPATH . 'wp-config.php';
+		if ( ! file_exists( $config_path ) ) {
+			$config_path = dirname( ABSPATH ) . '/wp-config.php';
+			if ( ! file_exists( $config_path ) ) {
+				return new WP_Error( 'missing_file', 'wp-config.php not found.', array( 'status' => 404 ) );
+			}
+		}
+
+		if ( ! is_writable( $config_path ) ) {
+			return new WP_Error( 'not_writable', 'wp-config.php is not writable.', array( 'status' => 403 ) );
+		}
+
+		$config = file_get_contents( $config_path );
+		$pattern = "/define\(\s*['\"]" . preg_quote( $constant, '/' ) . "['\"]\s*,\s*(.*?)\s*\);/i";
+
+		if ( preg_match( $pattern, $config ) ) {
+			$new_config = preg_replace( $pattern, "define( '" . $constant . "', " . $value . " );", $config );
+		} else {
+			$insert = "define( '" . $constant . "', " . $value . " );\n";
+			$new_config = str_replace( "/* That's all, stop editing!", $insert . "/* That's all, stop editing!", $config );
+			if ( $new_config === $config ) {
+				$new_config = str_replace( "require_once ABSPATH . 'wp-settings.php';", $insert . "require_once ABSPATH . 'wp-settings.php';", $config );
+			}
+		}
+
+		if ( function_exists( 'shell_exec' ) && ! in_array( 'shell_exec', array_map( 'trim', explode( ',', ini_get( 'disable_functions' ) ) ) ) ) {
+			if ( ! function_exists( 'wp_tempnam' ) ) {
+				require_once ABSPATH . 'wp-admin/includes/file.php';
+			}
+			$tmp_file = wp_tempnam( 'wp_config_test.php' );
+			file_put_contents( $tmp_file, $new_config );
+			$lint = shell_exec( 'php -l ' . escapeshellarg( $tmp_file ) . ' 2>&1' );
+			unlink( $tmp_file );
+			if ( strpos( $lint, 'No syntax errors detected' ) === false ) {
+				return new WP_Error( 'syntax_error', 'The patch resulted in a PHP syntax error. Aborting save.', array( 'status' => 500, 'lint' => $lint ) );
+			}
+		}
+
+		file_put_contents( $config_path, $new_config );
+
+		return rest_ensure_response( array(
+			'success'  => true,
+			'constant' => $constant,
+			'value'    => $value,
+			'message'  => 'wp-config.php patched successfully.',
+		) );
+	}
+
+	/**
+	 * Niche Tool: Inspect WooCommerce System Status
+	 */
+	public function inspect_woo_system_status_callback( WP_REST_Request $request ) {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			return new WP_Error( 'woo_missing', 'WooCommerce is not active on this site.', array( 'status' => 400 ) );
+		}
+
+		if ( ! class_exists( 'WC_REST_System_Status_V2_Controller' ) ) {
+			return rest_ensure_response( array(
+				'status'  => 'WooCommerce is active but REST API controller for system status is not available.',
+				'version' => WC()->version,
+			) );
+		}
+
+		$controller = new WC_REST_System_Status_V2_Controller();
+		$req = new WP_REST_Request( 'GET', '/wc/v3/system_status' );
+		$response = $controller->get_items( $req );
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		return rest_ensure_response( array(
+			'woocommerce_status' => $response->get_data(),
+		) );
+	}
+
+	/**
+	 * Niche Tool: Export WP Data
+	 */
+	public function export_wp_data_callback( WP_REST_Request $request ) {
+		$post_type = $request->get_param( 'post_type' );
+		if ( empty( $post_type ) ) {
+			$post_type = 'post';
+		}
+
+		$args = array(
+			'post_type'      => $post_type,
+			'posts_per_page' => 100, 
+			'post_status'    => 'any',
+		);
+
+		$query = new WP_Query( $args );
+		$export = array();
+
+		if ( $query->have_posts() ) {
+			foreach ( $query->posts as $p ) {
+				$data = (array) $p;
+				$data['meta'] = get_post_meta( $p->ID );
+				$data['terms'] = wp_get_object_terms( $p->ID, get_object_taxonomies( $p ) );
+				$export[] = $data;
+			}
+		}
+
+		return rest_ensure_response( array(
+			'post_type' => $post_type,
+			'count'     => count( $export ),
+			'total'     => $query->found_posts,
+			'data'      => $export,
+		) );
+	}
+	/**
+	 * Integration Tool: Get Query Monitor Profile
+	 */
+	public function get_query_monitor_profile_callback( WP_REST_Request $request ) {
+		if ( ! class_exists( 'QueryMonitor' ) && ! defined( 'QM_VERSION' ) ) {
+			return new WP_Error( 'qm_missing', 'The Query Monitor plugin is not active on this site. The user must install and activate it first from the WordPress repo.', array( 'status' => 400 ) );
+		}
+
+		// Check if QM is configured to write to the PHP error log or headers
+		$qm_options = get_option( 'qm_settings', array() );
+
+		return rest_ensure_response( array(
+			'status'     => 'Query Monitor is installed and active.',
+			'qm_version' => defined( 'QM_VERSION' ) ? QM_VERSION : 'unknown',
+			'qm_options' => $qm_options,
+			'integration_instructions' => 'Query Monitor profiles data on the frontend for authenticated administrators. To retrieve Query Monitor data autonomously, use the /evaluate-php-sandbox tool and execute a script that forces QM to log its output, or parse the HTML response from the frontend while passing the admin auth cookies.',
+		) );
+	}
+	/**
+	 * SaaS Integration: Refactor Code (Rector)
+	 */
+	public function refactor_code_rector_callback( WP_REST_Request $request ) {
+		$code = $request->get_param( 'code' );
+		if ( empty( $code ) ) {
+			return new WP_Error( 'missing_code', 'PHP code is required.', array( 'status' => 400 ) );
+		}
+
+		$tmp_dir = get_temp_dir();
+		$tmp_file = $tmp_dir . uniqid('rector_') . '.php';
+		file_put_contents( $tmp_file, $code );
+
+		$rector_bin = dirname(__FILE__) . '/../vendor/bin/rector';
+		if ( ! file_exists( $rector_bin ) ) {
+			$rector_bin = ABSPATH . 'vendor/bin/rector';
+		}
+
+		if ( file_exists( $rector_bin ) && function_exists( 'shell_exec' ) ) {
+			$cmd = escapeshellcmd( $rector_bin ) . ' process ' . escapeshellarg( $tmp_file ) . ' 2>&1';
+			$output = shell_exec( $cmd );
+			
+			$refactored_code = file_get_contents( $tmp_file );
+			unlink( $tmp_file );
+
+			return rest_ensure_response( array(
+				'success'         => true,
+				'rector_output'   => $output,
+				'refactored_code' => $refactored_code,
+			) );
+		}
+
+		unlink( $tmp_file );
+		return new WP_Error( 'rector_missing', 'Rector is not installed in the vendor directory, or shell_exec is disabled.', array( 'status' => 500 ) );
+	}
+
+	/**
+	 * SaaS Integration: Ask OpenAI
+	 */
+	public function ask_openai_callback( WP_REST_Request $request ) {
+		$prompt = $request->get_param( 'prompt' );
+		if ( empty( $prompt ) ) {
+			return new WP_Error( 'missing_prompt', 'Prompt is required.', array( 'status' => 400 ) );
+		}
+
+		$autoload = dirname(__FILE__) . '/../vendor/autoload.php';
+		if ( ! class_exists( '\OpenAI' ) && file_exists( $autoload ) ) {
+			require_once $autoload;
+		}
+
+		if ( ! class_exists( '\OpenAI' ) ) {
+			return new WP_Error( 'openai_missing', 'openai-php/client is not installed.', array( 'status' => 500 ) );
+		}
+
+		$api_key = defined('OPENAI_API_KEY') ? OPENAI_API_KEY : get_option('openai_api_key');
+		if ( empty( $api_key ) ) {
+			return new WP_Error( 'missing_api_key', 'OPENAI_API_KEY is not set in wp-config or options.', array( 'status' => 401 ) );
+		}
+
+		try {
+			$client = \OpenAI::client( $api_key );
+			$response = $client->chat()->create([
+				'model'    => 'gpt-4o-mini',
+				'messages' => [
+					['role' => 'user', 'content' => $prompt],
+				],
+			]);
+
+			return rest_ensure_response( array(
+				'success'  => true,
+				'response' => $response->choices[0]->message->content,
+			) );
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'openai_error', $e->getMessage(), array( 'status' => 500 ) );
+		}
+	}
+
+	/**
+	 * SaaS Integration: Extract PHPDoc
+	 */
+	public function extract_phpdoc_callback( WP_REST_Request $request ) {
+		$docblock = $request->get_param( 'docblock' );
+		if ( empty( $docblock ) ) {
+			return new WP_Error( 'missing_docblock', 'Docblock is required.', array( 'status' => 400 ) );
+		}
+
+		$autoload = dirname(__FILE__) . '/../vendor/autoload.php';
+		if ( ! class_exists( '\PHPStan\PhpDocParser\Lexer\Lexer' ) && file_exists( $autoload ) ) {
+			require_once $autoload;
+		}
+
+		if ( ! class_exists( '\PHPStan\PhpDocParser\Lexer\Lexer' ) ) {
+			return new WP_Error( 'phpstan_missing', 'phpstan/phpdoc-parser is not installed.', array( 'status' => 500 ) );
+		}
+
+		try {
+			$lexer = new \PHPStan\PhpDocParser\Lexer\Lexer();
+			$constExprParser = new \PHPStan\PhpDocParser\Parser\ConstExprParser();
+			$typeParser = new \PHPStan\PhpDocParser\Parser\TypeParser($constExprParser);
+			$phpDocParser = new \PHPStan\PhpDocParser\Parser\PhpDocParser($typeParser, $constExprParser);
+
+			$tokens = $lexer->tokenize($docblock);
+			$tokenIterator = new \PHPStan\PhpDocParser\Parser\TokenIterator($tokens);
+			$phpDocNode = $phpDocParser->parse($tokenIterator);
+
+			$tags = array();
+			foreach ( $phpDocNode->getTags() as $tag ) {
+				$tags[] = array(
+					'name'  => $tag->name,
+					'value' => (string) $tag->value,
+				);
+			}
+
+			return rest_ensure_response( array(
+				'success' => true,
+				'tags'    => $tags,
+			) );
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'parser_error', $e->getMessage(), array( 'status' => 500 ) );
+		}
+	}
+	/**
+	 * SaaS Integration: Generate Dummy Data (Faker)
+	 */
+	public function generate_dummy_data_callback( WP_REST_Request $request ) {
+		$type = $request->get_param( 'type' );
+		$count = (int) $request->get_param( 'count' );
+		
+		if ( empty( $type ) || empty( $count ) ) {
+			return new WP_Error( 'missing_params', 'type (post/user) and count are required.', array( 'status' => 400 ) );
+		}
+
+		$autoload = dirname(__FILE__) . '/../vendor/autoload.php';
+		if ( file_exists( $autoload ) ) {
+			require_once $autoload;
+		}
+
+		if ( ! class_exists( '\Faker\Factory' ) ) {
+			return new WP_Error( 'faker_missing', 'fakerphp/faker is not installed.', array( 'status' => 500 ) );
+		}
+
+		$faker = \Faker\Factory::create();
+		$ids = array();
+
+		for ( $i = 0; $i < $count; $i++ ) {
+			if ( $type === 'post' ) {
+				$ids[] = wp_insert_post( array(
+					'post_title'   => $faker->sentence(),
+					'post_content' => $faker->paragraphs( 3, true ),
+					'post_status'  => 'publish',
+					'post_author'  => 1,
+				) );
+			} elseif ( $type === 'user' ) {
+				$ids[] = wp_insert_user( array(
+					'user_login' => $faker->userName,
+					'user_pass'  => wp_generate_password(),
+					'user_email' => $faker->email,
+					'first_name' => $faker->firstName,
+					'last_name'  => $faker->lastName,
+					'role'       => 'subscriber',
+				) );
+			}
+		}
+
+		return rest_ensure_response( array(
+			'success' => true,
+			'generated_ids' => $ids,
+		) );
+	}
+
+	/**
+	 * SaaS Integration: Manage Git Repository
+	 */
+	public function manage_git_repository_callback( WP_REST_Request $request ) {
+		$command = $request->get_param( 'command' ); // init, commit, status
+		$args = $request->get_param( 'args' ); // e.g. message for commit
+
+		$autoload = dirname(__FILE__) . '/../vendor/autoload.php';
+		if ( file_exists( $autoload ) ) {
+			require_once $autoload;
+		}
+
+		if ( ! class_exists( '\CzProject\GitPhp\Git' ) ) {
+			return new WP_Error( 'git_missing', 'czproject/git-php is not installed.', array( 'status' => 500 ) );
+		}
+
+		try {
+			$git = new \CzProject\GitPhp\Git();
+			$repo_dir = ABSPATH;
+			
+			if ( $command === 'init' ) {
+				$repo = $git->init( $repo_dir );
+				return rest_ensure_response( array( 'success' => true, 'message' => 'Repo initialized.' ) );
+			}
+
+			$repo = $git->open( $repo_dir );
+			
+			if ( $command === 'commit' ) {
+				$repo->execute('add', '.');
+				$repo->commit( $args ?: 'Update via AI' );
+				return rest_ensure_response( array( 'success' => true, 'message' => 'Changes committed.' ) );
+			}
+			
+			if ( $command === 'status' ) {
+				$status = $repo->execute('status');
+				return rest_ensure_response( array( 'success' => true, 'status' => $status ) );
+			}
+			
+			return new WP_Error( 'invalid_command', 'Invalid Git command.', array( 'status' => 400 ) );
+
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'git_error', $e->getMessage(), array( 'status' => 500 ) );
+		}
+	}
+
+	/**
+	 * SaaS Integration: Audit Composer Security
+	 */
+	public function audit_composer_security_callback( WP_REST_Request $request ) {
+		$autoload = dirname(__FILE__) . '/../vendor/autoload.php';
+		if ( file_exists( $autoload ) ) {
+			require_once $autoload;
+		}
+
+		if ( ! class_exists( '\Enlightn\SecurityChecker\SecurityChecker' ) ) {
+			return new WP_Error( 'checker_missing', 'enlightn/security-checker is not installed.', array( 'status' => 500 ) );
+		}
+
+		$lock_file = ABSPATH . 'composer.lock';
+		if ( ! file_exists( $lock_file ) ) {
+			$lock_file = dirname(__FILE__) . '/../composer.lock';
+			if ( ! file_exists( $lock_file ) ) {
+				return new WP_Error( 'no_lock_file', 'composer.lock not found.', array( 'status' => 404 ) );
+			}
+		}
+
+		try {
+			$checker = new \Enlightn\SecurityChecker\SecurityChecker();
+			$result = $checker->check( $lock_file );
+
+			return rest_ensure_response( array(
+				'success' => true,
+				'vulnerabilities' => $result,
+			) );
+		} catch ( \Exception $e ) {
+			return new WP_Error( 'checker_error', $e->getMessage(), array( 'status' => 500 ) );
+		}
+	}
+
+	/**
+	 * SaaS Integration: Format WP Standards
+	 */
+	public function format_wp_standards_callback( WP_REST_Request $request ) {
+		$code = $request->get_param( 'code' );
+		if ( empty( $code ) ) {
+			return new WP_Error( 'missing_code', 'PHP code is required.', array( 'status' => 400 ) );
+		}
+
+		$tmp_dir = get_temp_dir();
+		$tmp_file = $tmp_dir . uniqid('phpcs_') . '.php';
+		file_put_contents( $tmp_file, $code );
+
+		$phpcbf_bin = dirname(__FILE__) . '/../vendor/bin/phpcbf';
+		if ( ! file_exists( $phpcbf_bin ) ) {
+			$phpcbf_bin = ABSPATH . 'vendor/bin/phpcbf';
+		}
+
+		if ( file_exists( $phpcbf_bin ) && function_exists( 'shell_exec' ) ) {
+			$cmd = escapeshellcmd( $phpcbf_bin ) . ' --standard=WordPress ' . escapeshellarg( $tmp_file ) . ' 2>&1';
+			$output = shell_exec( $cmd );
+			
+			$formatted_code = file_get_contents( $tmp_file );
+			unlink( $tmp_file );
+
+			return rest_ensure_response( array(
+				'success' => true,
+				'phpcbf_output' => $output,
+				'formatted_code' => $formatted_code,
+			) );
+		}
+
+		unlink( $tmp_file );
+		return new WP_Error( 'phpcbf_missing', 'phpcbf is not installed or shell_exec disabled.', array( 'status' => 500 ) );
+	}
+}

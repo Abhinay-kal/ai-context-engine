@@ -1,0 +1,25 @@
+parameters:
+	level: 5
+	paths:
+		- wp-ai-context.php
+		- includes
+		- admin
+		- api
+		- cli
+		- collectors
+		- core
+		- privacy
+		- exporters
+		- compression
+		- adapters
+	ignoreErrors:
+		# WordPress stubs are NOT loaded in a bare repo; these are false
+		# positives until php-stubs/wordpress-stubs is a dev dependency.
+		- '#Call to an undefined function#'
+		- '#Call to an undefined method#'
+		- '#Instantiated class .* not found#'
+		- '#Class .* not found#'
+		- '#Constant .* not found#'
+		- '#Function .* not found#'
+		- '#Method .* not found#'
+		- '#Property .* not found#'
