@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  LaunchAgent: com.abhinay.ai-context-engine.auto-git-push.plist
+  Runs auto-git-push.sh every 30 minutes to commit & push changes.
+
+  To change interval: edit StartInterval (value is in seconds)
+    30 min  = 1800
+    1 hour  = 3600
+    2 hours = 7200
+-->
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.abhinay.ai-context-engine.auto-git-push</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>/Users/abhinaykalkhanday/Desktop/Projects/MCP-Context-export/scripts/auto-git-push.sh</string>
+  </array>
+
+  <!-- Run every 30 minutes (1800 seconds) -->
+  <key>StartInterval</key>
+  <integer>1800</integer>
+
+  <!-- Also run once immediately on load -->
+  <key>RunAtLoad</key>
+  <false/>
+
+  <!-- Restart if it crashes -->
+  <key>KeepAlive</key>
+  <false/>
+
+  <!-- Log stdout/stderr -->
+  <key>StandardOutPath</key>
+  <string>/Users/abhinaykalkhanday/Desktop/Projects/MCP-Context-export/scripts/auto-git-push.log</string>
+  <key>StandardErrorPath</key>
+  <string>/Users/abhinaykalkhanday/Desktop/Projects/MCP-Context-export/scripts/auto-git-push.log</string>
+
+  <!-- PATH so git is found -->
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>PATH</key>
+    <string>/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
+    <key>HOME</key>
+    <string>/Users/abhinaykalkhanday</string>
+  </dict>
+</dict>
+</plist>
